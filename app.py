@@ -2,9 +2,93 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
+# коды ответов
 @app.errorhandler(404)
 def not_found(err):
     return "нет такой страницы", 404
+
+# 400 Bad Request
+@app.route("/bad_request")
+def bad_request():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>400 — Bad Request</h1>
+        <p>Неверный запрос: сервер не может обработать его из-за ошибки клиента.</p>
+    </body>
+</html>
+''', 400
+
+
+# 401 Unauthorized
+@app.route("/unauthorized")
+def unauthorized():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>401 — Unauthorized</h1>
+        <p>Требуется аутентификация: доступ запрещён без авторизации.</p>
+    </body>
+</html>
+''', 401
+
+
+# 402 Payment Required
+@app.route("/payment_required")
+def payment_required():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>402 — Payment Required</h1>
+        <p>Доступ ограничен: требуется оплата для получения ресурса.</p>
+    </body>
+</html>
+''', 402
+
+
+# 403 Forbidden
+@app.route("/forbidden")
+def forbidden():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>403 — Forbidden</h1>
+        <p>Запрещено: у клиента нет прав доступа к содержимому.</p>
+    </body>
+</html>
+''', 403
+
+
+# 405 Method Not Allowed
+@app.route("/method_not_allowed")
+def method_not_allowed():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>405 — Method Not Allowed</h1>
+        <p>Метод запроса запрещён для данного ресурса.</p>
+    </body>
+</html>
+''', 405
+
+
+# 418 I'm a teapot
+@app.route("/teapot")
+def teapot():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>418 — I'm a teapot</h1>
+        <p>Сервер отказывается заваривать кофе, потому что он чайник 🫖.</p>
+    </body>
+</html>
+''', 418
 
 
 # главная страница
