@@ -7,6 +7,7 @@ def not_found(err):
     return "нет такой страницы", 404
 
 
+# главная страница
 @app.route("/")
 @app.route("/index")
 def index():
@@ -31,22 +32,30 @@ def index():
 </html>
 '''
 
+# лаба 1
 @app.route("/lab1")
 def lab1():
     return '''
 <!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Лабораторная 1</title>
+    </head>
     <body>
         <h2>Лабораторная работа №1</h2>
-        <ul>
-            <li><a href="/lab1/web">Web</a></li>
-            <li><a href="/lab1/author">Author</a></li>
-            <li><a href="/lab1/image">Image</a></li>
-            <li><a href="/lab1/counter">Counter</a></li>
-        </ul>
+        <p>
+            Flask — фреймворк для создания веб-приложений на языке программирования Python,
+            использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2.
+            Относится к категории так называемых микрофреймворков —
+            минималистичных каркасов веб-приложений, сознательно предоставляющих лишь самые базовые возможности.
+        </p>
+        <hr>
+        <a href="/">На главную</a>
     </body>
 </html>
 '''
+
 
 
 @app.route("/lab1/web")
