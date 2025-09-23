@@ -6,13 +6,13 @@ app = Flask(__name__)
 def not_found(err):
     return "нет такой страницы", 404
 
-@app.route("/web")
+@app.route("/lab1/web")
 def web():
     return """<!doctype html>
     	<html>
         	<body>
         		<h1>web-сервер на flask<h1>
-                <a href="/author">author</a> <!-- Ссылка на /author -->
+                <a href="/lab1/author">author</a> <!-- Ссылка на /lab1/author -->
         	<body>
         <html>""", 200, {
             "X-Server": "sample",
@@ -20,7 +20,7 @@ def web():
         }
 
 
-@app.route("/author")
+@app.route("/lab1/author")
 def author():
     name = "Анчугова Софья Алексеевна" # Создание переменной name и присвоение ей значения с ФИО студента
     group = "ФБИ-32"  # Создание переменной group и присвоение ей значения с номером группы
@@ -32,12 +32,12 @@ def author():
                 <p>Студент: """ + name + """</p>
                 <p>Группа: """ + group + """</p>
                 <p>Факультет: """ + faculty + """</p>
-                <a href="/web">web</a> <!-- Ссылка на /web -->
+                <a href="/lab1/web">web</a> <!-- Ссылка на /lab1/web -->
             </body>
         </html>"""
 
 
-@app.route('/image')
+@app.route('/lab1/image')
 def image():
     path = url_for("static", filename="oak.jpg")
     css = url_for("static", filename="lab1.css")
@@ -56,7 +56,7 @@ def image():
 
 count=0
 
-@app.route('/counter')
+@app.route('/lab1/counter')
 def counter():
     global count
     count+=1
@@ -88,14 +88,14 @@ def reset_counter():
 <html>
     <body>
         <h1>Счётчик очищен!</h1>
-        <a href="/counter">Вернуться к счётчику</a>
+        <a href="/lab1/counter">Вернуться к счётчику</a>
     </body>
 </html> '''
 
 
-@app.route("/info")
+@app.route("/lab1/info")
 def info():
-    return redirect("/author")
+    return redirect("/lab1/author")
 
 
 @app.route("/created")
