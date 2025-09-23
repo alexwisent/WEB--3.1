@@ -4,27 +4,53 @@ app = Flask(__name__)
 
 # коды ответов
 # 404 error
+
+# глобальный список для хранения журнала 404
+not_found_log = []
+
 @app.errorhandler(404)
 def not_found(err):
-    img_path = url_for('static', filename='404.png')
+    client_ip = request.remote_addr
+    access_time = datetime.datetime.now()
+    requested_url = request.url
+
+    # добавляем запись в журнал
+    not_found_log.append((access_time, client_ip, requested_url))
+
+    # путь к CSS
     css_path = url_for('static', filename='lab1.css')
-    return '''
+    
+    # формируем HTML для журнала
+    log_html = ""
+    for entry in not_found_log:
+        log_html += f"<li>[{entry[0]}, пользователь {entry[1]}] зашёл на адрес: {entry[2]}</li>\n"
+
+    return f'''
 <!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>Страница не найдена</title>
-        <link rel="stylesheet" type="text/css" href="''' + css_path + '''">
+        <link rel="stylesheet" type="text/css" href="{css_path}">
     </head>
     <body class="error404">
         <h1>404 — Страница не найдена</h1>
         <p>Упс! Кажется, вы заблудились.</p>
-        <img src="''' + img_path + '''" alt="404">
-        <br>
+        <p>Ваш IP: {client_ip}</p>
+        <p>Дата и время доступа: {access_time}</p>
         <a href="/">Вернуться на главную</a>
+
+        <div class="log">
+            <h2>Журнал посещений несуществующих страниц:</h2>
+            <ul>
+                {log_html}
+            </ul>
+        </div>
     </body>
 </html>
 ''', 404
+
+
 
 # 400 Bad Request
 @app.route("/bad_request")
