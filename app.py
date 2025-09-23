@@ -12,6 +12,7 @@ def web():
         	<body>
         <html>"""
 
+
 @app.route("/author")
 def author():
     name = "Анчугова Софья Алексеевна" # Создание переменной name и присвоение ей значения с ФИО студента
@@ -28,6 +29,7 @@ def author():
             </body>
         </html>"""
 
+
 @app.route('/image')
 def image():
     path = url_for("static", filename="oak.jpg")
@@ -39,6 +41,7 @@ def image():
         <img src="''' + path + '''">
     </body>
 </html> '''
+
 
 count=0
 
@@ -62,9 +65,11 @@ def counter():
     </body>
 </html> '''
 
+
 @app.route("/info")
 def info():
     return redirect("/author")
+
 
 @app.route("/created")
 def created():
@@ -76,3 +81,10 @@ def created():
         <div><i>что-то создано...</i></div>
     </body>
 </html> ''', 201
+
+
+app = Flask(__name__)
+
+@app.errorhandler(404)
+def not_found(err):
+    return "нет такой страницы", 404
