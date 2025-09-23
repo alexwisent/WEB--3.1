@@ -7,7 +7,7 @@ def web():
     	<html>
         	<body>
         		<h1>web-сервер на flask<h1>
-                <a href="/author">author<a/> <!-- Ссылка на /author -->
+                <a href="/author">author</a> <!-- Ссылка на /author -->
         	<body>
         <html>"""
 
@@ -23,7 +23,7 @@ def author():
                 <p>Студент: """ + name + """</p>
                 <p>Группа: """ + group + """</p>
                 <p>Факультет: """ + faculty + """</p>
-                <a href="/web">web<a/> <!-- Ссылка на /web -->
+                <a href="/web">web</a> <!-- Ссылка на /web -->
             </body>
         </html>"""
 
@@ -31,10 +31,10 @@ def author():
 def image():
     path = url_for("static", filename="oak.jpg")
     return '''
-    <!doctype html> 
-    <html>
-        <body>
-            <h1>Дуб</h1>
-            <img src="''' + path + '''">
-        </body>
-    </html> '''
+<!doctype html> 
+<html>
+    <body>
+        <h1>Дуб</h1>
+        <img src="''' + path + '''">
+    </body>
+</html> '''
