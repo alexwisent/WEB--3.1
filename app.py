@@ -183,9 +183,28 @@ def lab1():
         </p>
         <hr>
         <a href="/">На главную</a>
+
+        <h2>Список роутов</h2>
+        <ul>
+            <li><a href="/lab1/web">/lab1/web</a></li>
+            <li><a href="/lab1/author">/lab1/author</a></li>
+            <li><a href="/lab1/image">/lab1/image</a></li>
+            <li><a href="/lab1/counter">/lab1/counter</a></li>
+            <li><a href="/reset_counter">/reset_counter</a></li>
+            <li><a href="/lab1/info">/lab1/info</a></li>
+            <li><a href="/created">/created</a></li>
+            <li><a href="/bad_request">/bad_request</a></li>
+            <li><a href="/unauthorized">/unauthorized</a></li>
+            <li><a href="/payment_required">/payment_required</a></li>
+            <li><a href="/forbidden">/forbidden</a></li>
+            <li><a href="/method_not_allowed">/method_not_allowed</a></li>
+            <li><a href="/teapot">/teapot</a></li>
+            <li><a href="/cause_error">/cause_error</a></li>
+        </ul>
     </body>
 </html>
 '''
+
 
 
 
