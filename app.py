@@ -224,17 +224,25 @@ def author():
 def image():
     path = url_for("static", filename="oak.jpg")
     css = url_for("static", filename="lab1.css")
-    return '''
+    html_content = f'''
 <!doctype html> 
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="''' + css + '''"> <!-- подключаем стили сss -->
+        <link rel="stylesheet" type="text/css" href="{css}"> <!-- подключаем стили CSS -->
     </head>
     <body>
         <h1>Дуб</h1>
-        <img src="''' + path + '''">
+        <img src="{path}">
     </body>
-</html> '''
+</html>'''
+
+    return html_content, 200, {
+        "Content-Language": "ru",
+        "X-Author": "Anchugova Sofya",
+        "X-Lab": "Lab1-Image"
+    }
+
+
 
 
 count=0
