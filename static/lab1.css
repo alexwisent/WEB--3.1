@@ -17,3 +17,40 @@ img {
     border-radius: 15px;     /* скругляем углы картинки на 15 пикселей */
     box-shadow: 4px 4px 12px rgba(0,0,0,0.5); /* добавляем тень: смещение 4px по X и Y, размытие 12px, цвет — полупрозрачный чёрный */
 }
+
+
+/* Стили для страницы 404 */
+body.error404 {
+    background-color: #f2f2f2;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: #333;
+    padding: 50px;
+}
+
+body.error404 h1 {
+    font-size: 48px;
+    color: #ff4444;
+}
+
+body.error404 p {
+    font-size: 20px;
+}
+
+body.error404 img {
+    width: 300px;
+    height: auto;
+    margin-top: 30px;
+}
+
+body.error404 a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #0066cc;
+    font-weight: bold;
+}
+
+body.error404 a:hover {
+    text-decoration: underline;
+}

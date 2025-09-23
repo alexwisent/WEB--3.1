@@ -3,9 +3,28 @@ import datetime
 app = Flask(__name__)
 
 # коды ответов
+# 404 error
 @app.errorhandler(404)
 def not_found(err):
-    return "нет такой страницы", 404
+    img_path = url_for('static', filename='404.png')
+    css_path = url_for('static', filename='lab1.css')
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Страница не найдена</title>
+        <link rel="stylesheet" type="text/css" href="''' + css_path + '''">
+    </head>
+    <body class="error404">
+        <h1>404 — Страница не найдена</h1>
+        <p>Упс! Кажется, вы заблудились.</p>
+        <img src="''' + img_path + '''" alt="404">
+        <br>
+        <a href="/">Вернуться на главную</a>
+    </body>
+</html>
+''', 404
 
 # 400 Bad Request
 @app.route("/bad_request")
