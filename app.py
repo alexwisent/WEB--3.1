@@ -109,6 +109,34 @@ def teapot():
 </html>
 ''', 418
 
+@app.route("/cause_error")
+def cause_error():
+    # Искусственная ошибка для демонстрации перехватчика
+    return 1 / 0  # вызовет ZeroDivisionError
+
+@app.errorhandler(500)
+def handle_500_error(err):
+    css_path = url_for('static', filename='lab1.css')  # общий CSS
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Ошибка на сервере</title>
+        <link rel="stylesheet" type="text/css" href="''' + css_path + '''">
+    </head>
+    <body class="error500">
+        <h1>500 — Внутренняя ошибка сервера</h1>
+        <p>Упс! На сервере произошла непредвиденная ошибка.</p>
+        <br>
+        <a href="/">Вернуться на главную</a>
+    </body>
+</html>
+''', 500
+
+
+
+
 
 # главная страница
 @app.route("/")
