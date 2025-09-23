@@ -26,3 +26,4 @@ def author():
                 <a href="/web">web<a/> <!-- Ссылка на /web -->
             </body>
         </html>"""
+
