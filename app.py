@@ -1,12 +1,28 @@
 from flask import Flask
 app = Flask(__name__)
 
-@app.route("/")
 @app.route("/web")
-def start():
+def web():
     return """<!doctype html>
     	<html>
         	<body>
         		<h1>web-сервер на flask<h1>
+                <a href="/author">author<a/> <!-- Ссылка на /author -->
         	<body>
         <html>"""
+
+@app.route("/author")
+def author():
+    name = "Анчугова Софья Алексеевна" # Создание переменной name и присвоение ей значения с ФИО студента
+    group = "ФБИ-32"  # Создание переменной group и присвоение ей значения с номером группы
+    faculty = "ФБ" # Создание переменной faculty и присвоение ей значения с названием факультета
+
+    return """<!doctype html>
+        <html>
+            <body>
+                <p>Студент: """ + name + """</p>
+                <p>Группа: """ + group + """</p>
+                <p>Факультет: """ + faculty + """</p>
+                <a href="/web">web<a/> <!-- Ссылка на /web -->
+            </body>
+        </html>"""
