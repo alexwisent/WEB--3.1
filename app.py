@@ -8,7 +8,7 @@ app = Flask(__name__)
 # глобальный список для хранения журнала 404
 not_found_log = []
 
-@app.errorhandler(404)
+@app.errorhandler(404) #перехват ошибки
 def not_found(err):
     client_ip = request.remote_addr
     access_time = datetime.datetime.now()
