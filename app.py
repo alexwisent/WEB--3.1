@@ -346,3 +346,6 @@ def created():
 </html> ''', 201
 
 
+@app.route('/lab2/a/') 
+def a():
+    return 'ok'
