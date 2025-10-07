@@ -19,7 +19,7 @@
 
         <ul>
             {% for f in fruits %}
-            <li>{{ f }}</li>
+            <li>{{ loop.index }} - {{ f.name }}: {{ f.price }} &#8381;</li> <!-- &#8381; - знак рубля -->
             {% endfor %}
         </ul>
     </main>
