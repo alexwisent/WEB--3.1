@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect 
+from flask import Flask, url_for, request, redirect, abort
 import datetime
 app = Flask(__name__)
 
@@ -353,3 +353,14 @@ def a():
 @app.route('/lab2/a') 
 def a2():
     return 'без слеша'
+
+
+
+flower_list = ('роза', 'тюльпан', 'незабудка', 'ромашка') # Определим список наших цветов как кортеж. Первый цветок имеет индекс 0, второй — 1, последний — 3
+
+@app.route('/lab2/flowers/<int:flower_id>')  # Обработчик динамического пути: <flower_id>
+def flowers(flower_id):
+    if flower_id >= len(flower_list): # сравниваем с длиной кортежа, len тянет именно колво элементов, а не индекс, поэтому >=
+        abort(404)
+    else:
+        return "цветок: " + flower_list[flower_id]
