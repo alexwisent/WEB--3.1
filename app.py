@@ -381,4 +381,5 @@ def add_flower(name): # берем имя из адреса
 
 @app.route('/lab2/example')
 def example():
-    return render_template('example.html')
+    name = 'Софья Анчугова'
+    return render_template('example.html', name=name)
