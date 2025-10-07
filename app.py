@@ -383,6 +383,6 @@ def add_flower(name): # берем имя из адреса
 def example():
     name = 'Софья Анчугова'
     group = 'ФБИ-32'
-    course = '3'
+    course = '3 курс'
     lab = '2'
-    return render_template('example.html',name=name, group=group, course=course, lab=lab)
+    return render_template('example.html', name=name, group=group, course=course, lab=lab) # параметры шаблона 
