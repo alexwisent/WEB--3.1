@@ -356,11 +356,25 @@ def a2():
 
 
 
-flower_list = ('роза', 'тюльпан', 'незабудка', 'ромашка') # Определим список наших цветов как кортеж. Первый цветок имеет индекс 0, второй — 1, последний — 3
+flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка'] # Определим список наших цветов как список чтобы можно было добавлять элементы
 
 @app.route('/lab2/flowers/<int:flower_id>')  # Обработчик динамического пути: <flower_id>
 def flowers(flower_id):
-    if flower_id >= len(flower_list): # сравниваем с длиной кортежа, len тянет именно колво элементов, а не индекс, поэтому >=
+    if flower_id >= len(flower_list): # len тянет именно колво элементов, а не индекс, поэтому >=
         abort(404)
     else:
         return "цветок: " + flower_list[flower_id]
+
+@app.route('/lab2/add_flower/<name>') #тип name по умолчанию string
+def add_flower(name): # берем имя из адреса 
+    flower_list.append(name) # добавляем его в конец списка
+    return f'''
+<!doctype html>
+<html>
+    <body>
+        <h1>Добавлен новый цветок</h1>
+        <p>Название нового цветка: {name} </p>
+        <p>Всего цветов: {len(flower_list)} </p>
+        <p>Полный список: {flower_list} </p>
+    </body>
+</html> '''
