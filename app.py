@@ -348,4 +348,8 @@ def created():
 
 @app.route('/lab2/a/') 
 def a():
-    return 'ok'
+    return 'со слешем'
+
+@app.route('/lab2/a') 
+def a():
+    return 'без слеша'
