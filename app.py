@@ -489,3 +489,20 @@ def calc_default():
 @app.route('/lab2/calc/<int:a>') # перекидывает на адрес с a/1
 def calc_single(a):
     return redirect(f'/lab2/calc/{a}/1')
+
+@app.route('/lab2/books')
+def books():
+    book_list = [
+        {"title": "Мастер и Маргарита", "author": "Михаил Булгаков", "genre": "Роман", "pages": 480},
+        {"title": "Преступление и наказание", "author": "Фёдор Достоевский", "genre": "Роман", "pages": 672},
+        {"title": "Война и мир", "author": "Лев Толстой", "genre": "Роман-эпопея", "pages": 1225},
+        {"title": "Евгений Онегин", "author": "Александр Пушкин", "genre": "Роман в стихах", "pages": 384},
+        {"title": "Герой нашего времени", "author": "Михаил Лермонтов", "genre": "Роман", "pages": 320},
+        {"title": "Анна Каренина", "author": "Лев Толстой", "genre": "Роман", "pages": 864},
+        {"title": "Двенадцать стульев", "author": "Ильф и Петров", "genre": "Сатирический роман", "pages": 400},
+        {"title": "Собачье сердце", "author": "Михаил Булгаков", "genre": "Повесть", "pages": 200},
+        {"title": "Чевенгур", "author": "Андрей Платонов", "genre": "Роман", "pages": 480},
+        {"title": "Тихий Дон", "author": "Михаил Шолохов", "genre": "Роман", "pages": 960}
+    ]
+
+    return render_template('books.html', books=book_list)
