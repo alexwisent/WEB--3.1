@@ -552,15 +552,15 @@ flower_list = [
 def show_flowers():
     return render_template('flowers.html', flowers=flower_list)
 
-@app.route('/lab2/add_flower', methods=['POST'])
+@app.route('/lab2/add_flower', methods=['POST']) # Flask ждёт, что запрос будет не обычным GET (через адресную строку), а POST (через форму)
 def add_flower():
-    name = request.form.get('name')
+    name = request.form.get('name') # забирают значения, введённые пользователем в поля формы <input name="name"> и <input name="price">.
     price = request.form.get('price')
 
-    if not name or not price:
+    if not name or not price: # сервер возвращает ошибку если хотбы одно не заполнено
         abort(400)
 
-    flower_list.append({"name": name, "price": int(price)})
+    flower_list.append({"name": name, "price": int(price)}) # В конец списка flower_list добавляется новый словарь (объект цветка), int(price) — приводит цену к целому числу (чтобы с ней можно было потом работать как с числом)
     return redirect(url_for('show_flowers'))
 
 @app.route('/lab2/del_flower/<int:flower_id>')
