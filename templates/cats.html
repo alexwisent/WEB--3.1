@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2 — Котики{% endblock %}
+
+{% block main %}
+<h1>Галерея котиков</h1>
+
+<div class="cats-grid">
+    {% for cat in cats %}
+    <div class="cat-card">
+        <img src="{{ url_for('static', filename=cat.image) }}" alt="{{ cat.name }}">
+        <h3>{{ cat.name }}</h3>
+        <p>{{ cat.desc }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<a href="/lab2/">Вернуться в Лабораторную 2</a>
+{% endblock %}
