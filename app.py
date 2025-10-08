@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect, abort, render_template
+from flask import Flask, url_for, request, redirect, abort, render_template, redirect, url_for
 import datetime
 app = Flask(__name__)
 
@@ -457,3 +457,35 @@ def lab2():
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase = phrase)
+
+
+
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def lab2_calc(a, b):
+    # Чтобы избежать деления на ноль:
+    if b == 0:
+        div_result = 'нельзя делить на 0'
+    else:
+        div_result = a / b
+
+    return f'''
+<!doctype html>
+<html>
+    <body>
+        <h1>Расчёт с параметрами:</h1>
+        <p>{a} + {b} = {a + b}</p>
+        <p>{a} - {b} = {a - b}</p>
+        <p>{a} * {b} = {a * b}</p>
+        <p>{a} / {b} = {div_result}</p>
+        <p>{a}<sup>{b}</sup> = {a ** b}</p>
+    </body>
+</html>
+'''
+
+@app.route('/lab2/calc/') # перекидывает на адрес с 1/1
+def calc_default():
+    return redirect('/lab2/calc/1/1')
+
+@app.route('/lab2/calc/<int:a>') # перекидывает на адрес с a/1
+def calc_single(a):
+    return redirect(f'/lab2/calc/{a}/1')
