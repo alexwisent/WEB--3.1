@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{# основной контент: #}
+{% block main %}
+    <div>Фраза: {{ phrase }}</div>
+    <div>Фраза: {{ phrase | title }}</div>
+    <div>Фраза: {{ phrase | striptags }}</div> <!-- striptags удалит все теги из фразы -->
+    <div>Фраза: {{ phrase | safe }}</div> <!-- safe разрешит использовать html теги -->
+    <div>Фраза: {{ phrase | striptags | replace('сколько', 'много') | replace('нам', 'тут') | upper }}</div> <!-- уберём все теги (striptags), поменяем слово «сколько» на слово «много», а слово «нам» на «тут» (replace), преобразуем всё в верхний регистр (upper) -->
+    <div>Фраза: {{ phrase | striptags | reverse }}</div> <!-- reverse выводит в обратном порядке -->
+{% endblock %}
