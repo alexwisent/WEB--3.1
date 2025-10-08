@@ -363,9 +363,36 @@ def flowers(flower_id):
     if flower_id >= len(flower_list): # len тянет именно колво элементов, а не индекс, поэтому >=
         abort(404)
     else:
-        return "цветок: " + flower_list[flower_id]
+        # return "цветок: " + flower_list[flower_id]
+        flower = flower_list[flower_id]
+        return f'''
+<!doctype html>
+<html>
+    <body>
+        <h1>Информация о цветке</h1>
+        <p><b>ID:</b> {flower_id}</p>
+        <p><b>Название:</b> {flower}</p>
+        <hr>
+        <a href="/lab2/all_flowers">Посмотреть все цветы</a>
+    </body>
+</html>
+'''    
 
-@app.route('/lab2/add_flower/<name>') #тип name по умолчанию string
+
+@app.route('/lab2/add_flower/') # Добавление цветка с проверкой имени
+def add_flower_no_name():
+    # Если пользователь не указал имя
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>400 — Bad Request</h1>
+        <p>Не задано имя цветка :( </p>
+        <a href="/lab2/all_flowers">Посмотреть все цветы</a>
+    </body>
+</html>''', 400
+
+@app.route('/lab2/add_flower/<name>') # добавление цветка в список       #тип name по умолчанию string
 def add_flower(name): # берем имя из адреса 
     flower_list.append(name) # добавляем его в конец списка
     return f'''
@@ -378,6 +405,36 @@ def add_flower(name): # берем имя из адреса
         <p>Полный список: {flower_list} </p>
     </body>
 </html> '''
+
+@app.route('/lab2/all_flowers') #вывод всех цветов
+def all_flowers():
+    flower_items = ''.join([f'<li>{i}. {flower}</li>' for i, flower in enumerate(flower_list)])
+    return f'''
+<!doctype html>
+<html>
+    <body>
+        <h1>Все цветы</h1>
+        <ul>
+            {flower_items}
+        </ul>
+        <p>Всего: {len(flower_list)}</p>
+    </body>
+</html>'''
+
+
+@app.route('/lab2/clear_flowers') # очищение списка цветов
+def clear_flowers():
+    flower_list.clear()
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>Список цветов очищен!</h1>
+        <a href="/lab2/all_flowers">Посмотреть список</a>
+    </body>
+</html>
+'''
+
 
 @app.route('/lab2/example')
 def example():
