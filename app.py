@@ -408,7 +408,7 @@ def add_flower(name): # берем имя из адреса
 
 @app.route('/lab2/all_flowers') #вывод всех цветов
 def all_flowers():
-    flower_items = ''.join([f'<li>{i}. {flower}</li>' for i, flower in enumerate(flower_list)])
+    flower_items = ''.join([f'<li>{i}. {flower}</li>' for i, flower in enumerate(flower_list)]) # Функция enumerate() пробегает по списку и даёт одновременно индекс и значение каждого элемента. Метод join() склеивает все элементы списка в одну большую строку без разделителей
     return f'''
 <!doctype html>
 <html>
