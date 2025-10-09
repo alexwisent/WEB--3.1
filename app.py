@@ -561,17 +561,17 @@ def add_flower():
         abort(400)
 
     flower_list.append({"name": name, "price": int(price)}) # В конец списка flower_list добавляется новый словарь (объект цветка), int(price) — приводит цену к целому числу (чтобы с ней можно было потом работать как с числом)
-    return redirect(url_for('show_flowers'))
+    return redirect(url_for('show_flowers')) # После добавления цветка пользователя перенаправляют обратно на страницу со всеми цветами
 
-@app.route('/lab2/del_flower/<int:flower_id>')
+@app.route('/lab2/del_flower/<int:flower_id>') # <int:flower_id> - выбираем цветок по индексу  
 def del_flower(flower_id):
-    if flower_id < 0 or flower_id >= len(flower_list):
+    if flower_id < 0 or flower_id >= len(flower_list): # если индекс меньше 0 или больше, чем длина списка — такой цветок не существует, выдаётся ошибка 404 Not Found.
         abort(404)
-    del flower_list[flower_id]
-    return redirect(url_for('show_flowers'))
+    del flower_list[flower_id] # удаляет цветок из списка по индексу.
+    return redirect(url_for('show_flowers')) # перенаправление обратно на страницу со списком
 
 @app.route('/lab2/clear_flowers')
 def clear_flowers():
-    flower_list.clear()
-    return redirect(url_for('show_flowers'))
+    flower_list.clear() # очищает список полностью
+    return redirect(url_for('show_flowers')) # перенаправление обратно на страницу со списком чтобы обновить вид сразу
 
