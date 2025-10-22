@@ -5,27 +5,27 @@
 {% block main %}
     <h1>Список цветов</h1>
 
-    {% if flowers %} {# подтягиваем словарь с цветами #}
+    {% if flowers %}
         <ul>
-            {% for flower in flowers %} {# ожидается словарь с полями name и price #}
+            {% for flower in flowers %}
                 <li>
-                    {{ loop.index }}. {{ flower.name }} — {{ flower.price }} руб. {# loop.index - нумерация с единицы, назание цветка, цена #}
-                    <a href="{{ url_for('del_flower', flower_id=loop.index0) }}">удалить</a> {# loop.index0 - по нумерации с нуля (по индексам) указываем путь на страницу которая удалит оперделенныйцветок #}
+                    {{ loop.index }}. {{ flower.name }} — {{ flower.price }} руб.
+                    <a href="{{ url_for('lab2.del_flower', flower_id=loop.index0) }}">удалить</a>
                 </li>
             {% endfor %}
         </ul>
 
-        <p><a href="{{ url_for('clear_flowers') }}">Удалить все цветы</a></p> {# очищенеи списка цветов #}
+        <p><a href="{{ url_for('lab2.clear_flowers') }}">Удалить все цветы</a></p>
     {% else %}
         <p>Список цветов пуст.</p>
     {% endif %}
 
-    <form action="{{ url_for('add_flower') }}" method="post"> {# HTML-тег <form> описывает форму — область, в которой пользователь может вводить данные, отправит данные на маршрут /lab2/add_flower, Функция url_for() — это часть Flask, которая генерирует правильный URL по названию функции-обработчика #}
+    <form action="{{ url_for('lab2.add_flower') }}" method="post">
         <label>Добавить цветок:</label>
-        <input type="text" name="name" placeholder="название" required> {# текствое поле с name #}
-        <input type="number" name="price" placeholder="цена" min="1" required> {# текствое поле с price, минимальное значение 1 #}
-        <button type="submit">Добавить</button> {# при нажатии браузер отправит POST-запрос на URL из action #}
+        <input type="text" name="name" placeholder="название" required>
+        <input type="number" name="price" placeholder="цена" min="1" required>
+        <button type="submit">Добавить</button>
     </form>
 
-    <p>Всего цветов: {{ flowers|length }}</p> {# {{ flowers|length }} — применение фильтра length к переменной flowers (аналог len(flowers) в Python #}
+    <p>Всего цветов: {{ flowers|length }}</p>
 {% endblock %}
