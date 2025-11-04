@@ -103,4 +103,3 @@ def index():
     </body>
 </html>
 '''
-
