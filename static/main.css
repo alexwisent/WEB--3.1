@@ -51,3 +51,7 @@ footer {
     object-fit: cover;
     border-radius: 12px;
 }
+
+.error {
+    color: red;
+}
