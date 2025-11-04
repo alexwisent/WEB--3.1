@@ -79,6 +79,7 @@ def handle_500_error(err):
 # главная страница
 @app.route("/")
 @app.route("/index")
+@app.route("/start")
 def index():
     return '''
 <!doctype html>
