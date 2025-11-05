@@ -27,11 +27,11 @@ def del_cookie():
 def form1():
     errors = {}
     user = request.args.get('user')
-    if user == '':
+    if not user:
         errors['user'] = 'Заполните поле!'
 
     age = request.args.get('age')
-    if age == '' or age is None:
+    if not age:
         errors['age'] = 'Заполните поле!'
             
     sex = request.args.get('sex')
