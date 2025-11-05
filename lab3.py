@@ -75,7 +75,7 @@ def settings():
     fontsize = request.args.get('fontsize')
     fontstyle = request.args.get('fontstyle')
 
-    if color or bgcolor or fontsize or fontstyle:
+    if any([color, bgcolor, fontsize, fontstyle is not None]):
         resp = make_response(redirect('/lab3/settings'))
         if color:
             resp.set_cookie('color', color)
@@ -83,7 +83,9 @@ def settings():
             resp.set_cookie('bgcolor', bgcolor)
         if fontsize:
             resp.set_cookie('fontsize', fontsize)
-        if fontstyle:
+        if fontstyle == '':
+            resp.delete_cookie('fontstyle')  # удаляем cookie, если выбрано "Обычный"
+        else:
             resp.set_cookie('fontstyle', fontstyle)
         return resp
 

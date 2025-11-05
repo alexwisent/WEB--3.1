@@ -23,10 +23,11 @@
         <div>
             <label for="fontstyle">Стиль текста:</label>
             <select id="fontstyle" name="fontstyle">
-                <option value="">Обычный</option>
+                <option value="" {% if not fontstyle %}selected{% endif %}>Обычный</option>
                 <option value="italic" {% if fontstyle == 'italic' %}selected{% endif %}>Курсив</option>
                 <option value="bold" {% if fontstyle == 'bold' %}selected{% endif %}>Жирный</option>
             </select>
+
         </div>
 
         <div>
