@@ -102,17 +102,17 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
     ]
-    return render_template('example.html', name=name, group=group, course=course, lab=lab, fruits=fruits) # параметры шаблона 
+    return render_template('lab2/example.html', name=name, group=group, course=course, lab=lab, fruits=fruits) # параметры шаблона 
 
 @lab2.route('/lab2/') 
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase = phrase)
+    return render_template('lab2/filter.html', phrase = phrase)
 
 
 
@@ -162,7 +162,7 @@ def books():
         {"title": "Чевенгур", "author": "Андрей Платонов", "genre": "Роман", "pages": 480},
         {"title": "Тихий Дон", "author": "Михаил Шолохов", "genre": "Роман", "pages": 960}
     ]
-    return render_template('books.html', books=book_list)
+    return render_template('lab2/books.html', books=book_list)
 
 
 
@@ -190,7 +190,7 @@ def cats():
         {"name": "Рыжик", "image": "cats/кот 19.jpg", "desc": "Самый рыжий из всех котов."},
         {"name": "Лео", "image": "cats/кот 20.jpg", "desc": "Грациозный кот с королевскими манерами."}
     ]
-    return render_template('cats.html', cats=cats)
+    return render_template('lab2/cats.html', cats=cats)
 
 
 
@@ -205,7 +205,7 @@ flower_list = [
 
 @lab2.route('/lab2/flowers/') # открываем страницу flowers.html, подтягиваем туда словарь в цветами flower_list в часетве переменной flowers (она используется в flowers.html)
 def show_flowers():
-    return render_template('flowers.html', flowers=flower_list)
+    return render_template('lab2/flowers.html', flowers=flower_list)
 
 @lab2.route('/lab2/add_flower', methods=['POST']) # Flask ждёт, что запрос будет не обычным GET (через адресную строку), а POST (через форму)
 def add_flower():
