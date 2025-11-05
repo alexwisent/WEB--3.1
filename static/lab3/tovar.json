@@ -1,0 +1,22 @@
+[
+  {"name": "iPhone 15", "price": 120000, "brand": "Apple", "color": "черный"},
+  {"name": "Samsung Galaxy S24", "price": 95000, "brand": "Samsung", "color": "серый"},
+  {"name": "Xiaomi 14", "price": 60000, "brand": "Xiaomi", "color": "синий"},
+  {"name": "Google Pixel 8", "price": 88000, "brand": "Google", "color": "черный"},
+  {"name": "Huawei P60", "price": 77000, "brand": "Huawei", "color": "белый"},
+  {"name": "Realme GT 5", "price": 50000, "brand": "Realme", "color": "серый"},
+  {"name": "OnePlus 12", "price": 85000, "brand": "OnePlus", "color": "зеленый"},
+  {"name": "Sony Xperia 1 V", "price": 110000, "brand": "Sony", "color": "черный"},
+  {"name": "Honor Magic6", "price": 68000, "brand": "Honor", "color": "бежевый"},
+  {"name": "Asus ROG Phone 8", "price": 115000, "brand": "Asus", "color": "черный"},
+  {"name": "Nokia X30", "price": 43000, "brand": "Nokia", "color": "синий"},
+  {"name": "ZTE Axon 50", "price": 47000, "brand": "ZTE", "color": "серый"},
+  {"name": "Vivo X100", "price": 72000, "brand": "Vivo", "color": "черный"},
+  {"name": "Infinix Zero 30", "price": 35000, "brand": "Infinix", "color": "золотой"},
+  {"name": "Tecno Phantom X2", "price": 40000, "brand": "Tecno", "color": "серый"},
+  {"name": "Motorola Edge 40", "price": 56000, "brand": "Motorola", "color": "красный"},
+  {"name": "Apple iPhone SE", "price": 60000, "brand": "Apple", "color": "белый"},
+  {"name": "Samsung A55", "price": 47000, "brand": "Samsung", "color": "синий"},
+  {"name": "Xiaomi Redmi Note 13", "price": 30000, "brand": "Xiaomi", "color": "черный"},
+  {"name": "Realme C67", "price": 25000, "brand": "Realme", "color": "зеленый"}
+]
