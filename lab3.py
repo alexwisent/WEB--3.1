@@ -67,3 +67,30 @@ def success():
     name = request.args.get('name', '')
     
     return render_template('lab3/success.html', price=price, name=name)
+
+@lab3.route('/lab3/settings') #обработчик, который будет принимать цвет и записывать его в куки. 
+def settings():
+    color = request.args.get('color')
+    bgcolor = request.args.get('bgcolor')
+    fontsize = request.args.get('fontsize')
+    fontstyle = request.args.get('fontstyle')
+
+    if color or bgcolor or fontsize or fontstyle:
+        resp = make_response(redirect('/lab3/settings'))
+        if color:
+            resp.set_cookie('color', color)
+        if bgcolor:
+            resp.set_cookie('bgcolor', bgcolor)
+        if fontsize:
+            resp.set_cookie('fontsize', fontsize)
+        if fontstyle:
+            resp.set_cookie('fontstyle', fontstyle)
+        return resp
+
+    color = request.cookies.get('color')
+    bgcolor = request.cookies.get('bgcolor')
+    fontsize = request.cookies.get('fontsize')
+    fontstyle = request.cookies.get('fontstyle')
+
+    resp = make_response(render_template('lab3/settings.html', color=color, bgcolor=bgcolor, fontsize=fontsize, fontstyle=fontstyle))
+    return resp
