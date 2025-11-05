@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Оплата</h1>
+
+    <div>
+        Сумма к оплате: {{ price }}
+    </div>
+
+    <form action="/lab3/success"> <!-- перенаправленеи на следующий адрес -->
+        <input type="hidden" name="price" value="{{ price }}">  <!-- Добавляем скрытое поле с суммой -->
+
+        <div>Номер банковской карты:</div>
+        <label>
+            <input type="text" name="card" pattern="\d{16}"> <!-- \d - любая цифра, {16} - повторить предидущий символ 16 раз. Итого "в поле надо ввести 16 цифр" -->
+        </label>
+
+        <div>Имя держателя карты:</div>
+        <label>
+            <input type="text" name="name">
+        </label>
+
+        <div>Номер CVV:</div>
+        <label>
+            <input type="text" name="cvv" size="3" pattern="\d{3}">
+        </label>
+        <div>
+
+        <button type="submit">Оплатить</button>
+        <a href="/lab3/order">Отказаться</a> <!-- если пользователь отказывается, его переносит на предидущую форму -->
+        </div>
+    </form>
+{% endblock %}
