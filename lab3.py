@@ -1,4 +1,6 @@
 from flask import Blueprint, url_for, redirect, render_template, abort, request, make_response, redirect
+import json
+import os
 lab3 = Blueprint('lab3', __name__)
 
 @lab3.route('/lab3/')
@@ -186,3 +188,87 @@ def clear_settings():
     for cookie_name in cookies_to_clear:
         response.set_cookie(cookie_name, '', max_age=0)
     return response
+
+
+@lab3.route('/lab3/products', methods=['GET'])
+def products():
+    # --- список товаров ---
+    products = [
+        {'name': 'iPhone 15', 'price': 120000, 'brand': 'Apple', 'color': 'черный'},
+        {'name': 'Samsung Galaxy S24', 'price': 95000, 'brand': 'Samsung', 'color': 'серый'},
+        {'name': 'Xiaomi 14', 'price': 60000, 'brand': 'Xiaomi', 'color': 'синий'},
+        {'name': 'Google Pixel 8', 'price': 88000, 'brand': 'Google', 'color': 'черный'},
+        {'name': 'Huawei P60', 'price': 77000, 'brand': 'Huawei', 'color': 'белый'},
+        {'name': 'Realme GT 5', 'price': 50000, 'brand': 'Realme', 'color': 'серый'},
+        {'name': 'OnePlus 12', 'price': 85000, 'brand': 'OnePlus', 'color': 'зеленый'},
+        {'name': 'Sony Xperia 1 V', 'price': 110000, 'brand': 'Sony', 'color': 'черный'},
+        {'name': 'Honor Magic6', 'price': 68000, 'brand': 'Honor', 'color': 'бежевый'},
+        {'name': 'Asus ROG Phone 8', 'price': 115000, 'brand': 'Asus', 'color': 'черный'},
+        {'name': 'Nokia X30', 'price': 43000, 'brand': 'Nokia', 'color': 'синий'},
+        {'name': 'ZTE Axon 50', 'price': 47000, 'brand': 'ZTE', 'color': 'серый'},
+        {'name': 'Vivo X100', 'price': 72000, 'brand': 'Vivo', 'color': 'черный'},
+        {'name': 'Infinix Zero 30', 'price': 35000, 'brand': 'Infinix', 'color': 'золотой'},
+        {'name': 'Tecno Phantom X2', 'price': 40000, 'brand': 'Tecno', 'color': 'серый'},
+        {'name': 'Motorola Edge 40', 'price': 56000, 'brand': 'Motorola', 'color': 'красный'},
+        {'name': 'Apple iPhone SE', 'price': 60000, 'brand': 'Apple', 'color': 'белый'},
+        {'name': 'Samsung A55', 'price': 47000, 'brand': 'Samsung', 'color': 'синий'},
+        {'name': 'Xiaomi Redmi Note 13', 'price': 30000, 'brand': 'Xiaomi', 'color': 'черный'},
+        {'name': 'Realme C67', 'price': 25000, 'brand': 'Realme', 'color': 'зеленый'}
+    ]
+
+    # --- минимальная и максимальная цены ---
+    min_price_all = min(p['price'] for p in products)
+    max_price_all = max(p['price'] for p in products)
+
+    # --- получаем значения из формы или из куки ---
+    min_price = request.args.get('min_price') or request.cookies.get('min_price')
+    max_price = request.args.get('max_price') or request.cookies.get('max_price')
+
+    filtered = products
+
+    # Проверяем, нажата ли кнопка сброса
+    if request.args.get('reset'):
+        resp = make_response(redirect('/lab3/products'))
+        resp.delete_cookie('min_price')
+        resp.delete_cookie('max_price')
+        return resp
+
+    # Преобразуем строки в числа (если заданы)
+    try:
+        if min_price:
+            min_price = int(min_price)
+        if max_price:
+            max_price = int(max_price)
+    except ValueError:
+        min_price = None
+        max_price = None
+
+    # Если пользователь перепутал местами — меняем
+    if min_price and max_price and min_price > max_price:
+        min_price, max_price = max_price, min_price
+
+    # Фильтрация по диапазону
+    if min_price:
+        filtered = [p for p in filtered if p['price'] >= min_price]
+    if max_price:
+        filtered = [p for p in filtered if p['price'] <= max_price]
+
+    count = len(filtered)
+
+    # Подготавливаем ответ с установкой куки (если заданы)
+    resp = make_response(render_template(
+        'lab3/products.html',
+        products=filtered,
+        count=count,
+        min_price=min_price,
+        max_price=max_price,
+        min_price_all=min_price_all,
+        max_price_all=max_price_all
+    ))
+
+    if min_price:
+        resp.set_cookie('min_price', str(min_price))
+    if max_price:
+        resp.set_cookie('max_price', str(max_price))
+
+    return resp

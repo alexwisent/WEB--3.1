@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block lab %}Поиск товаров{% endblock %}
+
+{% block main %}
+<h1>Поиск смартфонов по цене</h1>
+
+<form method="get">
+    <label>Мин. цена:</label>
+    <input type="number" name="min_price" 
+           placeholder="{{ min_price_all }}" 
+           value="{{ min_price or '' }}">
+    <label>Макс. цена:</label>
+    <input type="number" name="max_price" 
+           placeholder="{{ max_price_all }}" 
+           value="{{ max_price or '' }}">
+    <button type="submit" name="search" value="1">Искать</button>
+    <button type="submit" name="reset" value="1">Сброс</button>
+</form>
+
+<hr>
+
+{% if count == 0 %}
+    <p>Не найдено ни одного товара.</p>
+{% else %}
+    <p>Найдено товаров: {{ count }}</p>
+    <ul>
+        {% for p in products %}
+        <li>
+            <b>{{ p.name }}</b> — {{ p.price }} ₽
+            ({{ p.brand }}, {{ p.color }})
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
