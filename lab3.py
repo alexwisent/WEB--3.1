@@ -177,3 +177,12 @@ def train_ticket():
 
     # Если GET или есть ошибки
     return render_template('lab3/train_ticket_form.html', errors=errors, request=request)
+
+@lab3.route('/lab3/settings/clear')
+def clear_settings():
+    response = make_response(redirect(url_for('lab3.settings')))    # Создаем ответ с редиректом
+    cookies_to_clear = ['color', 'bgcolor', 'fontsize', 'fontstyle']    # Очищаем все куки, связанные с настройками
+    
+    for cookie_name in cookies_to_clear:
+        response.set_cookie(cookie_name, '', max_age=0)
+    return response
