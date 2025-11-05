@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block lab %}Железнодорожный билет{% endblock %}
+
+{% block main %}
+<h1>{{ ticket.ticket_type }}</h1>
+
+<p><strong>ФИО:</strong> {{ ticket.fio }}</p>
+<p><strong>Возраст:</strong> {{ ticket.age }}</p>
+<p><strong>Полка:</strong> {{ ticket.berth }}</p>
+<p><strong>С бельём:</strong> {{ 'Да' if ticket.bedding=='on' else 'Нет' }}</p>
+<p><strong>С багажом:</strong> {{ 'Да' if ticket.luggage=='on' else 'Нет' }}</p>
+<p><strong>Пункт выезда:</strong> {{ ticket.departure }}</p>
+<p><strong>Пункт назначения:</strong> {{ ticket.destination }}</p>
+<p><strong>Дата поездки:</strong> {{ ticket.travel_date }}</p>
+<p><strong>Страховка:</strong> {{ 'Да' if ticket.insurance=='on' else 'Нет' }}</p>
+
+<h2>Цена: {{ ticket.price }} руб.</h2>
+
+<div>
+    <a href="/lab3/train_ticket">Забронировать ещё билет</a>
+</div>
+{% endblock %}

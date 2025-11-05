@@ -98,3 +98,82 @@ def settings():
 
     resp = make_response(render_template('lab3/settings.html', color=color, bgcolor=bgcolor, fontsize=fontsize, fontstyle=fontstyle))
     return resp
+
+@lab3.route('/lab3/train_ticket', methods=['GET', 'POST'])
+def train_ticket():
+    errors = {}
+    ticket_data = {}
+    price = 0
+
+    if request.method == 'POST':
+        # Получаем данные формы
+        fio = request.form.get('fio', '').strip()
+        berth = request.form.get('berth', '')
+        bedding = request.form.get('bedding')
+        luggage = request.form.get('luggage')
+        age = request.form.get('age', '').strip()
+        departure = request.form.get('departure', '').strip()
+        destination = request.form.get('destination', '').strip()
+        travel_date = request.form.get('travel_date', '').strip()
+        insurance = request.form.get('insurance')
+
+        # Проверка всех обязательных полей
+        if not fio:
+            errors['fio'] = 'Введите ФИО!'
+        if not berth:
+            errors['berth'] = 'Выберите полку!'
+        if not age:
+            errors['age'] = 'Введите возраст!'
+        else:
+            try:
+                age = int(age)
+                if age < 1 or age > 120:
+                    errors['age'] = 'Возраст должен быть от 1 до 120!'
+            except ValueError:
+                errors['age'] = 'Возраст должен быть числом!'
+        if not departure:
+            errors['departure'] = 'Введите пункт выезда!'
+        if not destination:
+            errors['destination'] = 'Введите пункт назначения!'
+        if not travel_date:
+            errors['travel_date'] = 'Введите дату поездки!'
+
+        # Если ошибок нет — считаем цену
+        if not errors:
+            # Базовая цена
+            if age < 18:
+                price = 700
+                ticket_type = "Детский билет"
+            else:
+                price = 1000
+                ticket_type = "Взрослый билет"
+
+            # Доплаты
+            if berth in ['нижняя', 'нижняя боковая']:
+                price += 100
+            if bedding == 'on':
+                price += 75
+            if luggage == 'on':
+                price += 250
+            if insurance == 'on':
+                price += 150
+
+            # Формируем данные билета
+            ticket_data = {
+                'fio': fio,
+                'berth': berth,
+                'bedding': bedding,
+                'luggage': luggage,
+                'age': age,
+                'departure': departure,
+                'destination': destination,
+                'travel_date': travel_date,
+                'insurance': insurance,
+                'price': price,
+                'ticket_type': ticket_type
+            }
+
+            return render_template('lab3/train_ticket_result.html', ticket=ticket_data)
+
+    # Если GET или есть ошибки
+    return render_template('lab3/train_ticket_form.html', errors=errors, request=request)
