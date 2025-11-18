@@ -6,7 +6,7 @@
     <title>Софья Анчугова. {% block lab %}{% endblock %}</title>
     <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='lab1/favicon.jpg') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='lab1/favicon.jpg') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"> <!-- стили -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab1/main.css') }}"> <!-- стили --> 
     <style>
         body{
             {% if request.cookies.get('color') %} 
