@@ -194,3 +194,55 @@ def fridge():
                                temp=temp, snowflakes=snowflakes)
 
     return render_template('lab4/fridge.html')
+
+
+@lab4.route('/lab4/grain', methods=['GET', 'POST'])
+def grain():
+    prices = {
+        'ячмень': 12000,
+        'овёс': 8500,
+        'пшеница': 9000,
+        'рожь': 15000
+    }
+
+    if request.method == 'POST':
+        grain_type = request.form.get('grain_type')
+        weight = request.form.get('weight', '').strip()
+
+        # Проверка веса
+        if weight == '':
+            return render_template('lab4/grain.html', error="Ошибка: не указан вес", grain_type=grain_type)
+
+        try:
+            weight = float(weight)
+        except ValueError:
+            return render_template('lab4/grain.html', error="Вес должен быть числом", grain_type=grain_type)
+
+        if weight <= 0:
+            return render_template('lab4/grain.html', error="Ошибка: вес должен быть больше 0", grain_type=grain_type)
+
+        if weight > 100:
+            return render_template('lab4/grain.html',
+                                   error="Такого объёма сейчас нет в наличии")
+
+        # Расчёт стоимости
+        base_price = prices[grain_type]
+        total = base_price * weight
+        discount_text = ""
+        discount_amount = 0
+
+        if weight > 10:
+            discount_amount = total * 0.10
+            total = total * 0.90
+            discount_text = f"Применена скидка 10% — {discount_amount:.2f} руб."
+
+        return render_template(
+            'lab4/grain.html',
+            grain_type=grain_type,
+            weight=weight,
+            total=total,
+            discount_text=discount_text,
+            base_price=base_price
+        )
+
+    return render_template('lab4/grain.html')
