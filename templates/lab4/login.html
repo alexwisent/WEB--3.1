@@ -7,6 +7,14 @@
         <h1>Добро пожаловать, {{ login }}!</h1>
     {% else %}
         <h1>Вход</h1>
+        <div>
+            users = [
+                {'login': 'alex', 'password': '123'},
+                {'login': 'bob', 'password': '555'},
+                {'login': 'maria', 'password': '789'},
+                {'login': 'john', 'password': '000'},
+            ]
+        </div>
         <h2>Пожалуйста, авторизуйтесь</h2>
         <form method="post">
             <div>
