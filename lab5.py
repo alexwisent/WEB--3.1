@@ -265,3 +265,120 @@ def show_users():
     
     db_close(conn, cur)
     return render_template('lab5/users.html', users=users)
+
+
+@lab5.route('/lab5/change_profile', methods=['GET', 'POST'])
+def change_profile():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+
+    if request.method == 'GET':
+        # Получаем текущие данные пользователя
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT login, full_name FROM users WHERE login=%s;", (login,))
+        else:
+            cur.execute("SELECT login, full_name FROM users WHERE login=?;", (login,))
+        
+        user = cur.fetchone()
+        current_login = user['login'] if user else login
+        current_full_name = user['full_name'] if user else ''
+        
+        db_close(conn, cur)
+        return render_template('lab5/change_profile.html', 
+                             current_login=current_login,
+                             current_full_name=current_full_name)
+    
+    # Обработка POST запроса
+    new_login = request.form.get('login')
+    new_full_name = request.form.get('full_name', '')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+    
+    errors = []
+    success_message = None
+    
+    # Проверка обязательных полей
+    if not new_login:
+        errors.append("Логин не может быть пустым")
+    
+    # Проверка уникальности нового логина (если он изменился)
+    if new_login != login:
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT login FROM users WHERE login=%s;", (new_login,))
+        else:
+            cur.execute("SELECT login FROM users WHERE login=?;", (new_login,))
+        
+        if cur.fetchone():
+            errors.append(f"Логин '{new_login}' уже занят")
+    
+    # Проверка пароля
+    if new_password:
+        if new_password != confirm_password:
+            errors.append("Новый пароль и подтверждение не совпадают")
+    
+    if not errors:
+        # Обновляем данные
+        try:
+            if new_password:
+                # Если меняем пароль
+                password_hash = generate_password_hash(new_password)
+                if current_app.config['DB_TYPE'] == 'postgres':
+                    cur.execute("UPDATE users SET login=%s, full_name=%s, password=%s WHERE login=%s;",
+                              (new_login, new_full_name, password_hash, login))
+                else:
+                    cur.execute("UPDATE users SET login=?, full_name=?, password=? WHERE login=?;",
+                              (new_login, new_full_name, password_hash, login))
+                
+                if new_login != login:
+                    # Обновляем сессию, если логин изменился
+                    session['login'] = new_login
+                    success_message = f"Логин, имя и пароль успешно изменены! Новый логин: {new_login}"
+                else:
+                    success_message = "Имя и пароль успешно изменены!"
+            else:
+                # Если не меняем пароль
+                if current_app.config['DB_TYPE'] == 'postgres':
+                    cur.execute("UPDATE users SET login=%s, full_name=%s WHERE login=%s;",
+                              (new_login, new_full_name, login))
+                else:
+                    cur.execute("UPDATE users SET login=?, full_name=? WHERE login=?;",
+                              (new_login, new_full_name, login))
+                
+                if new_login != login:
+                    # Обновляем сессию, если логин изменился
+                    session['login'] = new_login
+                    success_message = f"Логин и имя успешно изменены! Новый логин: {new_login}"
+                else:
+                    success_message = "Имя успешно изменено!"
+            
+            db_close(conn, cur)
+            
+            # После успешного обновления получаем обновленные данные для формы
+            conn, cur = db_connect()
+            if current_app.config['DB_TYPE'] == 'postgres':
+                cur.execute("SELECT login, full_name FROM users WHERE login=%s;", (session['login'],))
+            else:
+                cur.execute("SELECT login, full_name FROM users WHERE login=?;", (session['login'],))
+            
+            user = cur.fetchone()
+            current_login = user['login'] if user else session['login']
+            current_full_name = user['full_name'] if user else ''
+            
+            db_close(conn, cur)
+            return render_template('lab5/change_profile.html', 
+                                 current_login=current_login,
+                                 current_full_name=current_full_name,
+                                 success_message=success_message)
+            
+        except Exception as e:
+            errors.append(f"Ошибка при обновлении данных: {str(e)}")
+    
+    # Если есть ошибки или нужно просто показать форму
+    db_close(conn, cur)
+    return render_template('lab5/change_profile.html',
+                         errors=errors,
+                         current_login=new_login,
+                         current_full_name=new_full_name)

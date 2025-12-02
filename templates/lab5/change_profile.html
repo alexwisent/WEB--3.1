@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        /* Центрирование блока по вертикали и горизонтали */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        /* Стили для самого блока */
+        .profile-box {
+            border: 2px solid green;
+            border-radius: 12px;
+            padding: 20px 40px;
+            text-align: center;
+            min-width: 400px;
+        }
+
+        .profile-box form div {
+            margin: 15px 0;
+        }
+
+        .profile-box input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .profile-box label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .profile-box button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: green;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .profile-box button:hover {
+            background-color: darkgreen;
+        }
+
+        .error-list {
+            color: red;
+            text-align: left;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid red;
+            border-radius: 4px;
+            background-color: #ffe6e6;
+        }
+
+        .error-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .success-message {
+            color: green;
+            text-align: left;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid green;
+            border-radius: 4px;
+            background-color: #e6ffe6;
+        }
+
+        .section-title {
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .optional-note {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-link:hover {
+            background-color: #2980b9;
+        }
+
+        .current-user {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 6px;
+            border: 1px solid #d0e8ff;
+        }
+    </style>
+
+    <div class="profile-container">
+        <div class="profile-box">
+            <h1>Изменение профиля</h1>
+            
+            <div class="current-user">
+                Текущий пользователь: <strong>{{ session['login'] }}</strong>
+            </div>
+
+            {% if success_message %}
+                <div class="success-message">
+                    {{ success_message }}
+                </div>
+            {% endif %}
+
+            {% if errors %}
+                <div class="error-list">
+                    <ul>
+                        {% for error in errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <form action="/lab5/change_profile" method="post">
+                <div class="section-title">Основная информация</div>
+                
+                <div>
+                    <label for="login">Новый логин:</label>
+                    <input type="text" id="login" name="login" 
+                           value="{{ current_login }}" 
+                           placeholder="Введите новый логин" required>
+                    <div class="optional-note">* обязательное поле</div>
+                </div>
+                
+                <div>
+                    <label for="full_name">Полное имя:</label>
+                    <input type="text" id="full_name" name="full_name" 
+                           value="{{ current_full_name or '' }}" 
+                           placeholder="Введите ваше полное имя">
+                    <div class="optional-note">(необязательно)</div>
+                </div>
+
+                <div class="section-title">Смена пароля</div>
+                <div class="optional-note">Заполняйте только если хотите сменить пароль</div>
+                
+                <div>
+                    <label for="new_password">Новый пароль:</label>
+                    <input type="password" id="new_password" name="new_password" 
+                           placeholder="Введите новый пароль">
+                </div>
+                
+                <div>
+                    <label for="confirm_password">Подтверждение пароля:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" 
+                           placeholder="Повторите новый пароль">
+                </div>
+
+                <div>
+                    <button type="submit">Сохранить изменения</button>
+                </div>
+            </form>
+
+            <a href="/lab5" class="back-link">Вернуться к базе знаний</a>
+        </div>
+    </div>
+{% endblock %}
