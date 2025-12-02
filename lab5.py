@@ -38,34 +38,38 @@ def db_close(conn, cur):
     conn.close()
 
 
-@lab5.route('/lab5/register', methods = ['GET', 'POST'])    # для метода get показывал форму аутентификации; для метода post запускал процедуру регистрации
+@lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':     
+    if request.method == 'GET':
         return render_template('lab5/register.html')
     
     login = request.form.get('login')
     password = request.form.get('password')
+    full_name = request.form.get('full_name', '')  # Получаем полное имя, по умолчанию пустая строка
 
     if not login or not password:
-        return render_template('lab5/register.html', error='Заполните все поля')
+        return render_template('lab5/register.html', error='Заполните все обязательные поля', full_name=full_name)
     
     conn, cur = db_connect()
 
-    if current_app.config['DB_TYPE'] =='postgres': 
-        cur.execute("SELECT login FROM users WHERE login=%s;", (login,))    #сделаем SQL-запрос к БД, поищем пользователя с введённым логином
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT login FROM users WHERE login=%s;", (login,))
     else:
         cur.execute("SELECT login FROM users WHERE login=?;", (login,))
 
     if cur.fetchone():
         db_close(conn, cur)
-        return render_template('lab5/register.html', error="Такой пользователь уже существует")
+        return render_template('lab5/register.html', error="Такой пользователь уже существует", full_name=full_name)
 
     password_hash = generate_password_hash(password)
 
+    # Вставляем пользователя с полным именем
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);", (login, password_hash)) 
+        cur.execute("INSERT INTO users (login, password, full_name) VALUES (%s, %s, %s);", 
+                   (login, password_hash, full_name))
     else:
-        cur.execute("INSERT INTO users (login, password) VALUES (?, ?);", (login, password_hash))
+        cur.execute("INSERT INTO users (login, password, full_name) VALUES (?, ?, ?);", 
+                   (login, password_hash, full_name))
 
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
@@ -161,7 +165,6 @@ def create_article():
     else:
         cur.execute("INSERT INTO articles (user_id, title, article_text) VALUES (?, ?, ?);", (login_id, title, article_text))
 
-
     db_close(conn, cur)
     return redirect('/lab5') #или /lab5/
 
@@ -238,8 +241,27 @@ def delete_article(article_id):
     return redirect('/lab5/list')
 
 
-
 @lab5.route('/lab5/logout')
 def logout():
     session.pop('login', None)  # удаляем логин из сессии
     return redirect('/lab5/login')
+
+
+@lab5.route('/lab5/users')
+def show_users():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+
+    # Получаем всех пользователей (без паролей)
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT login, full_name FROM users ORDER BY login;")
+    else:
+        cur.execute("SELECT login, full_name FROM users ORDER BY login;")
+    
+    users = cur.fetchall()
+    
+    db_close(conn, cur)
+    return render_template('lab5/users.html', users=users)

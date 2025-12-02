@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <style>
+        /* Центрирование блока по вертикали и горизонтали */
+        .users-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        /* Стили для самого блока */
+        .users-box {
+            border: 2px solid green;
+            border-radius: 12px;
+            padding: 20px 40px;
+            text-align: center;
+            min-width: 600px;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+
+        .users-table th {
+            background-color: #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid green;
+            font-weight: bold;
+        }
+
+        .users-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .users-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .empty-message {
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            background-color: darkgreen;
+        }
+
+        .users-box h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <div class="users-container">
+        <div class="users-box">
+            <h1>Зарегистрированные пользователи</h1>
+
+            {% if users %}
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Логин</th>
+                            <th>Полное имя</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user['login'] }}</td>
+                            <td>
+                                {% if user['full_name'] and user['full_name'].strip() != '' %}
+                                    {{ user['full_name'] }}
+                                {% else %}
+                                    <span style="color: #999; font-style: italic;">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            {% else %}
+                <p class="empty-message">Нет зарегистрированных пользователей</p>
+            {% endif %}
+
+            <a href="/lab5" class="back-link">Вернуться к базе знаний</a>
+        </div>
+    </div>
+{% endblock %}
