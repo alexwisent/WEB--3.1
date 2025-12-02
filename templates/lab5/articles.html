@@ -56,9 +56,16 @@
                     <div class="article-item">
                         <h2>{{ article['title'] }}</h2>
                         <blockquote>{{ article['article_text'] }}</blockquote>
+
+                        <div style="margin-top:10px;">
+                            <a href="/lab5/edit/{{ article['id'] }}" style="margin-right:10px;">Редактировать</a>
+
+                            <form action="/lab5/delete/{{ article['id'] }}" method="post" style="display:inline;">
+                                <button type="submit" onclick="return confirm('Удалить статью?');">Удалить</button>
+                            </form>
+                        </div>
                     </div>
                 {% endfor %}
-
             {% else %}
                 <p>У вас пока нет ни одной статьи.</p>
             {% endif %}
