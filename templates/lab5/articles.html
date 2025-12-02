@@ -51,12 +51,17 @@
         <div class="articles-box">
             <h1>Статьи</h1>
 
-            {% for article in articles %}
-                <div class="article-item">
-                    <h2>{{ article['title'] }}</h2>
-                    <blockquote>{{ article['article_text'] }}</blockquote>
-                </div>
-            {% endfor %}
+            {% if articles %}
+                {% for article in articles %}
+                    <div class="article-item">
+                        <h2>{{ article['title'] }}</h2>
+                        <blockquote>{{ article['article_text'] }}</blockquote>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <p>У вас пока нет ни одной статьи.</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
