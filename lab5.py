@@ -82,8 +82,21 @@ def login():
 
 
 @lab5.route('/lab5/list')
-def list_articles():
-    return render_template('lab5/list.html')
+def list():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    conn, cur = db_connect()
+
+    cur.execute(f"SELECT id FROM users WHERE login='{login}';")
+    login_id = cur.fetchone()["id"]
+
+    cur.execute("SELECT * FROM articles WHERE user_id=%s;", (login_id,))
+    articles = cur.fetchall()
+
+    db_close(conn, cur)
+    return render_template('/lab5/articles.html', articles=articles)
 
 
 @lab5.route('/lab5/create', methods = ['GET', 'POST'])
@@ -103,7 +116,8 @@ def create_article():
     cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
     login_id = cur.fetchone()["id"]
 
-    cur.execute(f"INSERT INTO articles(user_id, title, article_text) VALUES ({login_id}, '{title}', '{article_text}');")
+    cur.execute(f"dd articles(user_id, title, article_text) VALUES ({login_id}, '{title}', '{article_text}');")
 
     db_close(conn, cur)
     return redirect('/lab5') #или /lab5/
+
