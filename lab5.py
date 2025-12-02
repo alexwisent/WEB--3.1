@@ -10,7 +10,7 @@ def lab():
     login = session.get('login', 'Anonymous')  # если пользователь не вошёл, показываем "Anonymous"
     return render_template('lab5/lab5.html', login=login)
 
-def bd_connect():
+def db_connect():
     conn = psycopg2.connect(
         host = '127.0.0.1',
         database = 'sonya_anchugova_knowledge_base',
@@ -21,7 +21,7 @@ def bd_connect():
 
     return conn, cur
 
-def bd_close(conn, cur):
+def db_close(conn, cur):
     conn.commit()
     cur.close()
     conn.close()
@@ -38,17 +38,17 @@ def register():
     if not (login or password):
         return render_template('lab5/register.html', error='Заполните все поля')
     
-    conn, cur = bd_connect()
+    conn, cur = db_connect()
 
     cur.execute(f"SELECT login FROM users WHERE login='{login}';")  #сделаем SQL-запрос к БД, поищем пользователя с введённым логином
     if cur.fetchone():
-        bd_close(conn, cur)
+        db_close(conn, cur)
         return render_template('lab5/register.html', error="Такой пользователь уже существует")
     
     password_hash = generate_password_hash(password)
     cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password_hash}');")   #регистрируем пользователя, вставляя в таблицу логин и пароль
     
-    bd_close(conn, cur)
+    db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
 
 
@@ -63,21 +63,21 @@ def login():
     if not (login or password):
         return render_template('lab5/login.html', error="Заполните поля")
     
-    conn, cur = bd_connect()
+    conn, cur = db_connect()
 
     cur.execute(f"SELECT * FROM users WHERE login='{login}';")      #Поиск пользователя в БД
     user = cur.fetchone()
 
     if not user:
-        bd_close(conn, cur)
+        db_close(conn, cur)
         return render_template('lab5/login.html', error='Логин и/или пароль неверны')
     
     if not check_password_hash(user['password'], password):     #Если найден пользователь, но пароль не совпадает
-        bd_close(conn, cur)
+        db_close(conn, cur)
         return render_template('lab5/login.html', error='Логин и/или пароль неверны')
     
     session['login'] = login       #для хранения данных аутентификации; теперь в сессии будет храниться логин пользователя 
-    bd_close(conn, cur)
+    db_close(conn, cur)
     return render_template('lab5/success_login.html', login=login)      #вход в сиситему, если все правильно
 
 
@@ -86,6 +86,24 @@ def list_articles():
     return render_template('lab5/list.html')
 
 
-@lab5.route('/lab5/create')
+@lab5.route('/lab5/create', methods = ['GET', 'POST'])
 def create_article():
-    return render_template('lab5/create.html')
+    login=session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+
+    if request.method == 'GET':
+        return render_template('lab5/create_article.html')      #покажем страницу ввода статьи
+    
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    conn, cur = db_connect()
+
+    cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
+    login_id = cur.fetchone()["id"]
+
+    cur.execute(f"INSERT INTO articles(user_id, title, article_text) VALUES ({login_id}, '{title}', '{article_text}');")
+
+    db_close(conn, cur)
+    return redirect('/lab5') #или /lab5/
