@@ -40,13 +40,13 @@ def register():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT login FROM users WHERE login='{login}';")  #сделаем SQL-запрос к БД, поищем пользователя с введённым логином
+    cur.execute("SELECT login FROM users WHERE login=%s;", (login,))  #сделаем SQL-запрос к БД, поищем пользователя с введённым логином
     if cur.fetchone():
         db_close(conn, cur)
         return render_template('lab5/register.html', error="Такой пользователь уже существует")
     
     password_hash = generate_password_hash(password)
-    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password_hash}');")   #регистрируем пользователя, вставляя в таблицу логин и пароль
+    cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);", (login, password_hash))   #регистрируем пользователя, вставляя в таблицу логин и пароль
     
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
@@ -65,7 +65,7 @@ def login():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT * FROM users WHERE login='{login}';")      #Поиск пользователя в БД
+    cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))      #Поиск пользователя в БД
     user = cur.fetchone()
 
     if not user:
@@ -89,7 +89,7 @@ def list():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT id FROM users WHERE login='{login}';")
+    cur.execute("SELECT id FROM users WHERE login=%s;", (login, )) 
     login_id = cur.fetchone()["id"]
 
     cur.execute("SELECT * FROM articles WHERE user_id=%s;", (login_id,))
@@ -116,7 +116,7 @@ def create_article():
     cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
     login_id = cur.fetchone()["id"]
 
-    cur.execute(f"dd articles(user_id, title, article_text) VALUES ({login_id}, '{title}', '{article_text}');")
+    cur.execute("INSERT INTO articles (user_id, title, article_text) VALUES (%s, %s, %s);", (login_id, title, article_text))
 
     db_close(conn, cur)
     return redirect('/lab5') #или /lab5/
