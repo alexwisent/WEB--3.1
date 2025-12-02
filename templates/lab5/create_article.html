@@ -57,6 +57,10 @@
         <div class="create-article-box">
             <h1>Создание статьи</h1>
 
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+
             <form method="post">
                 <div>
                     <label>

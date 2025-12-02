@@ -142,6 +142,11 @@ def create_article():
     title = request.form.get('title')
     article_text = request.form.get('article_text')
 
+    # Валидация: проверяем, что поля не пустые
+    if not title or not article_text:
+        error = "Пожалуйста, заполните название и текст статьи"
+        return render_template('lab5/create_article.html', error=error, title=title, article_text=article_text)
+
     conn, cur = db_connect()
 
     if current_app.config['DB_TYPE'] == 'postgres':
