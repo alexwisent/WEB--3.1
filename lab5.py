@@ -123,10 +123,11 @@ def list():
 
     login_id = cur.fetchone()["id"]
 
+    # Получаем статьи, сначала любимые, потом остальные
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("SELECT * FROM articles WHERE user_id=%s;", (login_id,))
+        cur.execute("SELECT * FROM articles WHERE user_id=%s ORDER BY is_favorite DESC, id DESC;", (login_id,))
     else:
-        cur.execute("SELECT * FROM articles WHERE user_id=?;", (login_id,))
+        cur.execute("SELECT * FROM articles WHERE user_id=? ORDER BY is_favorite DESC, id DESC;", (login_id,))
 
     articles = cur.fetchall()
 
@@ -160,13 +161,16 @@ def create_article():
 
     login_id = cur.fetchone()["id"]
 
+    # Вставляем статью с is_favorite = False по умолчанию
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("INSERT INTO articles (user_id, title, article_text) VALUES (%s, %s, %s);", (login_id, title, article_text))
+        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite) VALUES (%s, %s, %s, %s);", 
+                   (login_id, title, article_text, False))
     else:
-        cur.execute("INSERT INTO articles (user_id, title, article_text) VALUES (?, ?, ?);", (login_id, title, article_text))
+        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite) VALUES (?, ?, ?, ?);", 
+                   (login_id, title, article_text, False))
 
     db_close(conn, cur)
-    return redirect('/lab5') #или /lab5/
+    return redirect('/lab5')
 
 
 @lab5.route('/lab5/edit/<int:article_id>', methods=['GET', 'POST'])
@@ -382,3 +386,44 @@ def change_profile():
                          errors=errors,
                          current_login=new_login,
                          current_full_name=new_full_name)
+
+
+@lab5.route('/lab5/toggle_favorite/<int:article_id>', methods=['POST'])
+def toggle_favorite(article_id):
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+
+    conn, cur = db_connect()
+
+    # Получаем ID пользователя
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT id FROM users WHERE login=%s;", (login,))
+    else:
+        cur.execute("SELECT id FROM users WHERE login=?;", (login,))
+    login_id = cur.fetchone()["id"]
+
+    # Проверяем, существует ли статья и принадлежит ли пользователю
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT is_favorite FROM articles WHERE id=%s AND user_id=%s;", (article_id, login_id))
+    else:
+        cur.execute("SELECT is_favorite FROM articles WHERE id=? AND user_id=?;", (article_id, login_id))
+    
+    article = cur.fetchone()
+    
+    if not article:
+        db_close(conn, cur)
+        return "Статья не найдена или у вас нет доступа", 404
+
+    # Переключаем значение is_favorite
+    new_favorite_value = not article['is_favorite']
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("UPDATE articles SET is_favorite=%s WHERE id=%s;", (new_favorite_value, article_id))
+    else:
+        cur.execute("UPDATE articles SET is_favorite=? WHERE id=?;", (new_favorite_value, article_id))
+
+    db_close(conn, cur)
+    return redirect('/lab5/list')
+
+

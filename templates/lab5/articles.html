@@ -16,11 +16,12 @@
             border: 2px solid green;
             border-radius: 10px;
             text-align: center;
-            max-width: 900px;   /* увеличили ширину с 600px до 900px */
+            max-width: 900px;
             width: 100%;
             box-sizing: border-box;
         }
 
+        /* Стиль для обычной статьи */
         .article-item {
             border: 2px solid rgb(0, 153, 159);
             border-radius: 10px;
@@ -32,9 +33,18 @@
             overflow-wrap: break-word;
         }
 
+        /* Стиль для любимой статьи - розовая рамка */
+        .article-item.favorite {
+            border: 2px solid #ff69b4; /* розовый цвет */
+            background-color: #fff0f5; /* светло-розовый фон */
+        }
+
         .article-item h2 {
             margin-top: 0;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .article-item blockquote {
@@ -45,29 +55,121 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
+
+        .favorite-indicator {
+            color: #ff69b4;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .article-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .article-actions a,
+        .article-actions button {
+            padding: 5px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .article-actions a:hover,
+        .article-actions button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .favorite-btn {
+            background-color: #ffebf3 !important;
+            border-color: #ff69b4 !important;
+            color: #d81b60 !important;
+        }
+
+        .favorite-btn:hover {
+            background-color: #ffd6e7 !important;
+        }
+
+        .remove-favorite-btn {
+            background-color: #f0f8ff !important;
+            border-color: #87ceeb !important;
+            color: #1e88e5 !important;
+        }
+
+        .remove-favorite-btn:hover {
+            background-color: #e1f5fe !important;
+        }
+
+        .edit-btn {
+            background-color: #e8f5e8 !important;
+            border-color: #4caf50 !important;
+            color: #2e7d32 !important;
+        }
+
+        .edit-btn:hover {
+            background-color: #d0e9d0 !important;
+        }
+
+        .delete-btn {
+            background-color: #ffebee !important;
+            border-color: #f44336 !important;
+            color: #c62828 !important;
+        }
+
+        .delete-btn:hover {
+            background-color: #ffcdd2 !important;
+        }
+
+        .empty-message {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
     </style>
 
     <div class="articles-container">
         <div class="articles-box">
-            <h1>Статьи</h1>
+            <h1>Мои статьи</h1>
 
             {% if articles %}
                 {% for article in articles %}
-                    <div class="article-item">
-                        <h2>{{ article['title'] }}</h2>
+                    <div class="article-item {% if article['is_favorite'] %}favorite{% endif %}">
+                        <h2>
+                            <span>{{ article['title'] }}</span>
+                            {% if article['is_favorite'] %}
+                                <span class="favorite-indicator">★ Избранная</span>
+                            {% endif %}
+                        </h2>
                         <blockquote>{{ article['article_text'] }}</blockquote>
 
-                        <div style="margin-top:10px;">
-                            <a href="/lab5/edit/{{ article['id'] }}" style="margin-right:10px;">Редактировать</a>
-
+                        <div class="article-actions">
+                            <a href="/lab5/edit/{{ article['id'] }}" class="edit-btn">Редактировать</a>
+                            
+                            {% if article['is_favorite'] %}
+                                <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
+                                    <button type="submit" class="remove-favorite-btn">Убрать из избранного</button>
+                                </form>
+                            {% else %}
+                                <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
+                                    <button type="submit" class="favorite-btn">Добавить в избранное</button>
+                                </form>
+                            {% endif %}
+                            
                             <form action="/lab5/delete/{{ article['id'] }}" method="post" style="display:inline;">
-                                <button type="submit" onclick="return confirm('Удалить статью?');">Удалить</button>
+                                <button type="submit" class="delete-btn" onclick="return confirm('Удалить статью?');">Удалить</button>
                             </form>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <p>У вас пока нет ни одной статьи.</p>
+                <p class="empty-message">У вас пока нет ни одной статьи.</p>
             {% endif %}
         </div>
     </div>
