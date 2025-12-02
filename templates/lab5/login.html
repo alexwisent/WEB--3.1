@@ -3,24 +3,61 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Вход в систему</h1>
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh; /* центрирование по вертикали */
+        }
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    
-    <form action="/lab5/login" method="post">
-        <div>
-            <label>
-                Логин: <input type="text" name="login">
-            </label>
+        .login-box {
+            padding: 20px 30px;
+            border: 2px solid orange;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 300px;
+            box-sizing: border-box;
+        }
+
+        .login-box form div {
+            margin-bottom: 15px;
+        }
+
+        .login-box input {
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .login-box button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Вход в систему</h1>
+
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            
+            <form action="/lab5/login" method="post">
+                <div>
+                    <label>
+                        Логин: <input type="text" name="login">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Пароль: <input type="password" name="password">
+                    </label>
+                </div>
+                
+                <button type="submit">Вход</button>
+            </form>
         </div>
-        <div>
-            <label>
-                Пароль: <input type="password" name="password">
-            </label>
-        </div>
-        
-        <button type="submit">Вход</button>
-    </form>
+    </div>
 {% endblock %}

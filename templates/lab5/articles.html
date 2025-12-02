@@ -3,11 +3,60 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Статьи</h1>
-        
-    {% for article in articles %}
-        <h2>{{ article['title'] }}</h2>
-        <blockquote>{{ article['article_text'] }}</blockquote>
-    {% endfor %}
+    <style>
+        .articles-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 0;
+        }
 
+        .articles-box {
+            padding: 20px 30px;
+            border: 2px solid green;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 900px;   /* увеличили ширину с 600px до 900px */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .article-item {
+            border: 2px solid rgb(0, 153, 159);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            background-color: #f9f9f9;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .article-item h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .article-item blockquote {
+            margin: 0;
+            padding: 10px;
+            border-left: 4px solid rgb(0, 79, 118);
+            background-color: #fff;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
+
+    <div class="articles-container">
+        <div class="articles-box">
+            <h1>Статьи</h1>
+
+            {% for article in articles %}
+                <div class="article-item">
+                    <h2>{{ article['title'] }}</h2>
+                    <blockquote>{{ article['article_text'] }}</blockquote>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

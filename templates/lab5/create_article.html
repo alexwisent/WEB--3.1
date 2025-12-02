@@ -3,22 +3,76 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Создание статьи</h1>
+    <style>
+        .create-article-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 0;
+        }
 
-    <form method="post">
-        <div>
-            <label>
-                Название статьи:
-                <input type="text" maxlength="50" name="title">
-            </label>
-        </div>
+        .create-article-box {
+            padding: 20px 30px;
+            border: 2px solid green;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-        <div>
-            <textarea name="article_text"></textarea>
-        </div>
+        .create-article-box div {
+            margin-bottom: 15px;
+        }
 
-        <div>
-            <button type="submit">Готово</button>
+        .create-article-box input[type="text"],
+        .create-article-box textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .create-article-box textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .create-article-box button {
+            padding: 10px 20px;
+            border: none;
+            background-color: green;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .create-article-box button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+
+    <div class="create-article-container">
+        <div class="create-article-box">
+            <h1>Создание статьи</h1>
+
+            <form method="post">
+                <div>
+                    <label>
+                        Название статьи:
+                        <input type="text" maxlength="50" name="title">
+                    </label>
+                </div>
+
+                <div>
+                    <textarea name="article_text"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit">Готово</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 {% endblock %}

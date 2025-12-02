@@ -3,23 +3,67 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <h1>Регистрация</h1>
+    <style>
+        /* Центрирование блока по вертикали и горизонтали */
+        .register-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh; /* чтобы блок был примерно по центру страницы */
+        }
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    
-    <form action="/lab5/register" method="post">
-        <div>
-            <label>
-                Логин: <input type="text" name="login">
-            </label>
+        /* Стили для самого блока регистрации */
+        .register-box {
+            border: 2px solid green; /* зелёная рамка */
+            border-radius: 12px; /* скруглённые углы */
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        .register-box form div {
+            margin: 10px 0;
+        }
+
+        .register-box button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background-color: green;
+            color: white;
+            cursor: pointer;
+        }
+
+        .register-box button:hover {
+            background-color: darkgreen;
+        }
+
+        .register-box p {
+            margin: 0 0 10px 0;
+        }
+    </style>
+
+    <div class="register-container">
+        <div class="register-box">
+            <h1>Регистрация</h1>
+
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            
+            <form action="/lab5/register" method="post">
+                <div>
+                    <label>
+                        Логин: <input type="text" name="login">
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Пароль: <input type="password" name="password">
+                    </label>
+                </div>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
         </div>
-        <div>
-            <label>
-                Пароль: <input type="password" name="password">
-            </label>
-        </div>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
+    </div>
 {% endblock %}
