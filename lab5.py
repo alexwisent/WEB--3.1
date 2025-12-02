@@ -1,18 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, session
 import psycopg2
+from psycopg2.extras import RealDictCursor
 
 lab5 = Blueprint('lab5', __name__)
 
 @lab5.route('/lab5/')
 def lab():
-    # имя пользователя — пока "anonymous"
-    username = session.get('login', 'anonymous')
-    return render_template('lab5/lab5.html', username=username)
-
-
-@lab5.route('/lab5/login')
-def login():
-    return render_template('lab5/login.html')
+    login = session.get('login', 'Anonymous')  # если пользователь не вошёл, показываем "Anonymous"
+    return render_template('lab5/lab5.html', login=login)
 
 
 @lab5.route('/lab5/register', methods = ['GET', 'POST'])    # для метода get показывал форму аутентификации; для метода post запускал процедуру регистрации
@@ -23,7 +18,7 @@ def register():
     login = request.form.get('login')
     password = request.form.get('password')
 
-    if not login or not password:
+    if not (login or password):
         return render_template('lab5/register.html', error='Заполните все поля')
     
     conn = psycopg2.connect(
@@ -45,6 +40,44 @@ def register():
     cur.close()
     conn.close()
     return render_template('lab5/success.html', login=login)
+
+
+@lab5.route('/lab5/login', methods = ['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('lab5/login.html')
+    
+    login = request.form.get('login')
+    password = request.form.get('password')
+    
+    if not (login or password):
+        return render_template('lab5/login.html', error="Заполните поля")
+    
+    conn = psycopg2.connect(
+        host = '127.0.0.1',
+        database = 'sonya_anchugova_knowledge_base',
+        user = 'sonya_anchugova_knowledge_base',
+        password = 'sonya'
+    )
+    cur = conn.cursor(cursor_factory = RealDictCursor)      #RealDictCursor - чтобы образаться к полям записей по именам столбцов
+
+    cur.execute(f"SELECT * FROM users WHERE login='{login}';")      #Поиск пользователя в БД
+    user = cur.fetchone()
+
+    if not user:
+        cur.close()
+        conn.close()
+        return render_template('lab5/login.html', error='Логин и/или пароль неверны')
+    
+    if user['password'] != password:     #Если найден пользователь, но пароль не совпадает
+        cur.close()
+        conn.close()
+        return render_template('lab5/login.html', error='Логин и/или пароль неверны')
+    
+    session['login'] = login       #для хранения данных аутентификации; теперь в сессии будет храниться логин пользователя 
+    cur.close()
+    conn.close()
+    return render_template('lab5/success_login.html', login=login)      #вход в сиситему, если все правильно
 
 
 @lab5.route('/lab5/list')
