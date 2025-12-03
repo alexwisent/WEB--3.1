@@ -51,6 +51,25 @@
         .create-article-box button:hover {
             background-color: darkgreen;
         }
+
+        .checkbox-container {
+            text-align: left;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .checkbox-container label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+            width: auto;
+        }
     </style>
 
     <div class="create-article-container">
@@ -65,12 +84,19 @@
                 <div>
                     <label>
                         Название статьи:
-                        <input type="text" maxlength="50" name="title">
+                        <input type="text" maxlength="50" name="title" value="{{ title or '' }}">
                     </label>
                 </div>
 
                 <div>
-                    <textarea name="article_text"></textarea>
+                    <textarea name="article_text">{{ article_text or '' }}</textarea>
+                </div>
+
+                <div class="checkbox-container">
+                    <label>
+                        <input type="checkbox" name="is_public" {% if is_public %}checked{% endif %}>
+                        Сделать статью публичной (видимой для всех пользователей)
+                    </label>
                 </div>
 
                 <div>

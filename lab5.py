@@ -111,28 +111,46 @@ def login():
 @lab5.route('/lab5/list')
 def list():
     login = session.get('login')
-    if not login:
-        return redirect('/lab5/login')
     
     conn, cur = db_connect()
 
-    if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("SELECT id FROM users WHERE login=%s;", (login,))
-    else:
-        cur.execute("SELECT id FROM users WHERE login=?;", (login,))
+    if login:
+        # Для авторизованных пользователей - показываем все их статьи
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT id FROM users WHERE login=%s;", (login,))
+        else:
+            cur.execute("SELECT id FROM users WHERE login=?;", (login,))
 
-    login_id = cur.fetchone()["id"]
+        login_id = cur.fetchone()["id"]
 
-    # Получаем статьи, сначала любимые, потом остальные
-    if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("SELECT * FROM articles WHERE user_id=%s ORDER BY is_favorite DESC, id DESC;", (login_id,))
+        # Получаем статьи пользователя, сначала любимые, потом остальные
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT * FROM articles WHERE user_id=%s ORDER BY is_favorite DESC, id DESC;", (login_id,))
+        else:
+            cur.execute("SELECT * FROM articles WHERE user_id=? ORDER BY is_favorite DESC, id DESC;", (login_id,))
     else:
-        cur.execute("SELECT * FROM articles WHERE user_id=? ORDER BY is_favorite DESC, id DESC;", (login_id,))
+        # Для неавторизованных пользователей - показываем только публичные статьи
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("""
+                SELECT articles.*, users.login as author_login 
+                FROM articles 
+                JOIN users ON articles.user_id = users.id 
+                WHERE articles.is_public = TRUE 
+                ORDER BY articles.id DESC;
+            """)
+        else:
+            cur.execute("""
+                SELECT articles.*, users.login as author_login 
+                FROM articles 
+                JOIN users ON articles.user_id = users.id 
+                WHERE articles.is_public = 1 
+                ORDER BY articles.id DESC;
+            """)
 
     articles = cur.fetchall()
 
     db_close(conn, cur)
-    return render_template('/lab5/articles.html', articles=articles)
+    return render_template('/lab5/articles.html', articles=articles, is_authenticated=bool(login))
 
 
 @lab5.route('/lab5/create', methods = ['GET', 'POST'])
@@ -146,11 +164,12 @@ def create_article():
     
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = request.form.get('is_public') == 'on'  # Чекбокс
 
     # Валидация: проверяем, что поля не пустые
     if not title or not article_text:
         error = "Пожалуйста, заполните название и текст статьи"
-        return render_template('lab5/create_article.html', error=error, title=title, article_text=article_text)
+        return render_template('lab5/create_article.html', error=error, title=title, article_text=article_text, is_public=is_public)
 
     conn, cur = db_connect()
 
@@ -161,13 +180,13 @@ def create_article():
 
     login_id = cur.fetchone()["id"]
 
-    # Вставляем статью с is_favorite = False по умолчанию
+    # Вставляем статью с is_favorite = False по умолчанию и указанной публичностью
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite) VALUES (%s, %s, %s, %s);", 
-                   (login_id, title, article_text, False))
+        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite, is_public) VALUES (%s, %s, %s, %s, %s);", 
+                   (login_id, title, article_text, False, is_public))
     else:
-        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite) VALUES (?, ?, ?, ?);", 
-                   (login_id, title, article_text, False))
+        cur.execute("INSERT INTO articles (user_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
+                   (login_id, title, article_text, False, is_public))
 
     db_close(conn, cur)
     return redirect('/lab5')
@@ -202,6 +221,7 @@ def edit_article(article_id):
     if request.method == 'POST':
         title = request.form.get('title')
         article_text = request.form.get('article_text')
+        is_public = request.form.get('is_public') == 'on'  # Чекбокс
 
         if not title or not article_text:
             error = "Пожалуйста, заполните название и текст статьи"
@@ -209,9 +229,11 @@ def edit_article(article_id):
 
         # Обновление
         if current_app.config['DB_TYPE'] == 'postgres':
-            cur.execute("UPDATE articles SET title=%s, article_text=%s WHERE id=%s;", (title, article_text, article_id))
+            cur.execute("UPDATE articles SET title=%s, article_text=%s, is_public=%s WHERE id=%s;", 
+                       (title, article_text, is_public, article_id))
         else:
-            cur.execute("UPDATE articles SET title=?, article_text=? WHERE id=?;", (title, article_text, article_id))
+            cur.execute("UPDATE articles SET title=?, article_text=?, is_public=? WHERE id=?;", 
+                       (title, article_text, is_public, article_id))
 
         db_close(conn, cur)
         return redirect('/lab5/list')

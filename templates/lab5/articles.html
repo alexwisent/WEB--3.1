@@ -39,6 +39,12 @@
             background-color: #fff0f5; /* светло-розовый фон */
         }
 
+        /* Стиль для публичной статьи - зеленая рамка */
+        .article-item.public {
+            border: 2px solid #4caf50; /* зеленый цвет */
+            background-color: #f1f8e9; /* светло-зеленый фон */
+        }
+
         .article-item h2 {
             margin-top: 0;
             margin-bottom: 10px;
@@ -61,6 +67,20 @@
             font-size: 0.9em;
             font-weight: bold;
             margin-left: 10px;
+        }
+
+        .public-indicator {
+            color: #4caf50;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .author-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-style: italic;
         }
 
         .article-actions {
@@ -132,44 +152,99 @@
             font-style: italic;
             margin-top: 20px;
         }
+
+        .auth-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .auth-notice a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .auth-notice a:hover {
+            text-decoration: underline;
+        }
     </style>
 
     <div class="articles-container">
         <div class="articles-box">
-            <h1>Мои статьи</h1>
+            <h1>
+                {% if is_authenticated %}
+                    Мои статьи
+                {% else %}
+                    Публичные статьи
+                {% endif %}
+            </h1>
+
+            {% if not is_authenticated %}
+                <div class="auth-notice">
+                    <strong>Вы просматриваете публичные статьи.</strong> 
+                    Чтобы создавать и редактировать свои статьи, 
+                    <a href="/lab5/login">войдите в систему</a> или 
+                    <a href="/lab5/register">зарегистрируйтесь</a>.
+                </div>
+            {% endif %}
 
             {% if articles %}
                 {% for article in articles %}
-                    <div class="article-item {% if article['is_favorite'] %}favorite{% endif %}">
+                    <div class="article-item 
+                                {% if article['is_favorite'] %}favorite{% endif %} 
+                                {% if article['is_public'] %}public{% endif %}">
                         <h2>
                             <span>{{ article['title'] }}</span>
-                            {% if article['is_favorite'] %}
-                                <span class="favorite-indicator">★ Избранная</span>
-                            {% endif %}
+                            <div>
+                                {% if article['is_favorite'] %}
+                                    <span class="favorite-indicator">★ Избранная</span>
+                                {% endif %}
+                                {% if article['is_public'] %}
+                                    <span class="public-indicator">🌍 Публичная</span>
+                                {% endif %}
+                            </div>
                         </h2>
+                        
+                        {% if article.get('author_login') and not is_authenticated %}
+                            <div class="author-info">
+                                Автор: {{ article['author_login'] }}
+                            </div>
+                        {% endif %}
+                        
                         <blockquote>{{ article['article_text'] }}</blockquote>
 
-                        <div class="article-actions">
-                            <a href="/lab5/edit/{{ article['id'] }}" class="edit-btn">Редактировать</a>
-                            
-                            {% if article['is_favorite'] %}
-                                <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
-                                    <button type="submit" class="remove-favorite-btn">Убрать из избранного</button>
+                        {% if is_authenticated %}
+                            <div class="article-actions">
+                                <a href="/lab5/edit/{{ article['id'] }}" class="edit-btn">Редактировать</a>
+                                
+                                {% if article['is_favorite'] %}
+                                    <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
+                                        <button type="submit" class="remove-favorite-btn">Убрать из избранного</button>
+                                    </form>
+                                {% else %}
+                                    <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
+                                        <button type="submit" class="favorite-btn">Добавить в избранное</button>
+                                    </form>
+                                {% endif %}
+                                
+                                <form action="/lab5/delete/{{ article['id'] }}" method="post" style="display:inline;">
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Удалить статью?');">Удалить</button>
                                 </form>
-                            {% else %}
-                                <form action="/lab5/toggle_favorite/{{ article['id'] }}" method="post" style="display:inline;">
-                                    <button type="submit" class="favorite-btn">Добавить в избранное</button>
-                                </form>
-                            {% endif %}
-                            
-                            <form action="/lab5/delete/{{ article['id'] }}" method="post" style="display:inline;">
-                                <button type="submit" class="delete-btn" onclick="return confirm('Удалить статью?');">Удалить</button>
-                            </form>
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="empty-message">У вас пока нет ни одной статьи.</p>
+                <p class="empty-message">
+                    {% if is_authenticated %}
+                        У вас пока нет ни одной статьи.
+                    {% else %}
+                        Публичные статьи отсутствуют.
+                    {% endif %}
+                </p>
             {% endif %}
         </div>
     </div>
