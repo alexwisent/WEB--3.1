@@ -208,7 +208,7 @@
                             </div>
                         </h2>
                         
-                        {% if article.get('author_login') and not is_authenticated %}
+                        {% if article['author_login'] and not is_authenticated %}
                             <div class="author-info">
                                 Автор: {{ article['author_login'] }}
                             </div>
