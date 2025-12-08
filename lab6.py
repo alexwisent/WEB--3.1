@@ -48,6 +48,9 @@ def api():
                         'id': id
                     }
 
+    if data['methon'] == 'cancellation': 
+        office_number = data['params']
+
     return{
         'jsonrpc': '2.0',
         'error': {
