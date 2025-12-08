@@ -24,7 +24,7 @@ def api():
         }
     
     login = session.get('login')
-    if not login:
+    if not login:       # пользователь не авторизован
         return {
             'jsonrpc': '2.0',
             'error': {
@@ -32,10 +32,10 @@ def api():
                 'message': 'Unauthorized'
             },
             'id': id
-    }
-    
+        }
+        
     if data['method'] == 'booking':
-        office_number = data['params' ]
+        office_number = data['params']
         for office in offices:
             if office['number'] == office_number:
                 if office['tenant'] != '':
@@ -47,9 +47,46 @@ def api():
                         },
                         'id': id
                     }
+                
+                office['tenant'] = login        # Бронирование офиса
+                return {
+                    'jsonrpc': '2.0',
+                    'result': 'success',
+                    'id': id
+                }
 
-    if data['methon'] == 'cancellation': 
+    if data['method'] == 'cancellation': 
         office_number = data['params']
+
+        for office in offices:
+            if office['number'] == office_number:
+
+                if office['tenant'] == '':
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 3,
+                            'message': 'Офис не сдается в аренду'
+                        },
+                        'id': id
+                    }
+
+                if office['tenant'] != login:
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 4,
+                            'message': 'Вы можете отменить только свою собственную аренду'
+                        },
+                        'id': id
+                    }
+
+                office['tenant'] = ''   # Снятие аренды
+                return {
+                    'jsonrpc': '2.0',
+                    'result': 'Успех!',
+                    'id': id
+                }
 
     return{
         'jsonrpc': '2.0',
