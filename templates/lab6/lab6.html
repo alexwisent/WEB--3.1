@@ -27,7 +27,7 @@
                 for(let i = 0; i < office_list.length; i++) {
                     const office = office_list[i];
                     const li = document.createElement('li');
-                    li.innerText = `${office.number}: ${office.tenant ? 'арендован ' + office.tenant : 'свободен'}`;
+                    li.innerText = `${office.number} (цена: ${office.price}): ` + `${office.tenant ? 'арендован ' + office.tenant : 'свободен'}`;
 
                     if (!office.tenant) {
                         const bookingButton = document.createElement('button');
@@ -95,6 +95,27 @@
         });
     }
 
+    function getTotal() {
+        const url = '/lab6/json-rpc-api/';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'total',
+            'id': Math.round(Math.random() * 1000)
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.error) {
+                document.getElementById('total-price').innerText = data.result;
+            }
+        });
+    }
+
 
     function handleResponse(data) {
         if (data.error) {
@@ -118,10 +139,12 @@
             return;     // Не обновляем список при ошибке
         }
         getOfficeList();    // Обновляем список только при успешном выполнении
+        getTotal();         //Обновляем сумму после каждого успешного действия
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         getOfficeList();
+        getTotal();
     });
 </script>
 {% endblock %}
@@ -129,6 +152,9 @@
 {% block main %}
     <h1>Список кабинетов</h1>
     <ul id="office-list"></ul>
+
+    <h2>Общая стоимость вашей аренды:</h2>
+    <p id="total-price">0</p>
 {% endblock %}
 
 
