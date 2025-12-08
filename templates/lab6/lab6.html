@@ -3,214 +3,139 @@
 {% block lab %}Лабораторная работа 6{% endblock %}
 
 {% block main %}
-    <style>
-        /* Основной контейнер страницы */
-        .office-container {
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 20px;
-            border: 2px solid orange;
-            border-radius: 10px;
-            box-sizing: border-box;
-            background-color: #fff8f0;
-        }
-        h1, h2 {
-            text-align: center;
-            color: #ff6600;
-        }
-        /* Список офисов */
-        #office-list {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-        #office-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            border: 1px solid #ffcc99;
-            border-radius: 6px;
-            background-color: #fff2e6;
-        }
-        #office-list li button {
-            padding: 5px 10px;
-            cursor: pointer;
-            border: 1px solid orange;
-            border-radius: 5px;
-            background-color: #ffedcc;
-            transition: background-color 0.2s;
-        }
-        #office-list li button:hover {
-            background-color: #ffd699;
-        }
-        /* Общая сумма аренды */
-        .total-price {
-            text-align: center;
-            font-weight: bold;
-            margin-top: 15px;
-            font-size: 18px;
-            color: #ff6600;
-        }
-    </style>
+<style>
+    .office-container {
+        max-width: 600px;
+        margin: 30px auto;
+        padding: 20px;
+        border: 2px solid orange;
+        border-radius: 10px;
+        box-sizing: border-box;
+        background-color: #fff8f0;
+    }
+    h1, h2 {
+        text-align: center;
+        color: #ff6600;
+    }
+    #office-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    #office-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 8px;
+        border: 1px solid #ffcc99;
+        border-radius: 6px;
+        background-color: #fff2e6;
+    }
+    #office-list li button {
+        padding: 5px 10px;
+        cursor: pointer;
+        border: 1px solid orange;
+        border-radius: 5px;
+        background-color: #ffedcc;
+        transition: background-color 0.2s;
+    }
+    #office-list li button:hover {
+        background-color: #ffd699;
+    }
+    .total-price {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 15px;
+        font-size: 18px;
+        color: #ff6600;
+    }
+</style>
 
-    <div class="office-container">
-        <h1>Список кабинетов</h1>
-        <ul id="office-list"></ul>
+<div class="office-container">
+    <h1>Список кабинетов</h1>
+    <ul id="office-list"></ul>
 
-        <h2>Общая стоимость вашей аренды:</h2>
-        <p id="total-price" class="total-price">0</p>
-    </div>
+    <h2>Общая стоимость вашей аренды:</h2>
+    <p id="total-price" class="total-price">0</p>
+</div>
 {% endblock %}
-
 
 {% block script %}
 <script>
-    function getOfficeList() {
-        const url = '/lab6/json-rpc-api/';
-        const json = {
-            'jsonrpc': '2.0',
-            'method': 'info',
-            'id': Math.round(Math.random() *1000)
-            };
-            fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(json)
-            })
-            .then(function(response) {
-                return response.json()
-            })
-            .then(function(data) {
-                const office_list = data.result;
-                const ul = document.getElementById('office-list');
-                ul.innerHTML = '';      //Очищаем список перед обновлением
+function sendRequest(method, params, callback) {
+    const url = '/lab6/json-rpc-api/';
+    const json = {
+        'jsonrpc': '2.0',
+        'method': method,
+        'params': params,
+        'id': Math.floor(Math.random() * 10000)
+    };
 
-                for(let i = 0; i < office_list.length; i++) {
-                    const office = office_list[i];
-                    const li = document.createElement('li');
-                    li.innerText = `${office.number} (цена: ${office.price}): ` + `${office.tenant ? 'арендован ' + office.tenant : 'свободен'}`;
-
-                    if (!office.tenant) {
-                        const bookingButton = document.createElement('button');
-                        bookingButton.innerText = 'зарезервировать';
-                        bookingButton.onclick = function() {
-                            booking(office.number);
-                        };
-                        li.appendChild(bookingButton);
-                    } 
-                    else {
-                        const cancellationButton = document.createElement('button');
-                        cancellationButton.innerText = 'освободить';
-                        cancellationButton.onclick = function() {
-                            cancellation(office.number);
-                        };
-                        li.appendChild(cancellationButton);
-                    }
-
-                    ul.appendChild(li);
-                }
-            });
-    }
-
-
-    function booking(officeNumber) {
-        const url = '/lab6/json-rpc-api/';
-        const json = {
-            'jsonrpc':'2.0',
-            'method': 'booking',
-            'params': officeNumber,
-            'id': Math.round(Math.random() *1000)
-        };
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(json)
-        })
-        .then(function(response) {
-            return response.json()
-        })
-        .then(function(data) {
-            handleResponse(data);
-        });
-    }
-
-    function cancellation(officeNumber) {
-        const url = '/lab6/json-rpc-api/';
-        const json = {
-            'jsonrpc': '2.0',
-            'method': 'cancellation',
-            'params': officeNumber,
-            'id': Math.round(Math.random() * 1000)
-        };
-
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(json)
-        })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            handleResponse(data);
-        });
-    }
-
-    function getTotal() {
-        const url = '/lab6/json-rpc-api/';
-        const json = {
-            'jsonrpc': '2.0',
-            'method': 'total',
-            'id': Math.round(Math.random() * 1000)
-        };
-
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(json)
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (!data.error) {
-                document.getElementById('total-price').innerText = data.result;
-            }
-        });
-    }
-
-
-    function handleResponse(data) {
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(json)
+    })
+    .then(r => r.json())
+    .then(data => {
         if (data.error) {
-            switch (data.error.code) {
-                case 1:
-                    alert('Вы не авторизованы, пожалуйста, авторизуйтесь'); 
-                    break;
-                case 2:
-                    alert('Офис уже арендуется'); 
-                    break;
-                case 3:
-                    alert('Офис не арендован');
-                    break;
-                case 4:
-                    alert('Нельзя снять чужую аренду');
-                    break;
-                case -32601:
-                    alert('Странная ошибка');
-                    break;
+            let msg = '';
+            switch(data.error.code){
+                case 1: msg='Вы не авторизованы'; break;
+                case 2: msg='Офис уже арендован'; break;
+                case 3: msg='Офис не арендован'; break;
+                case 4: msg='Нельзя снять чужую аренду'; break;
+                default: msg = data.error.message;
             }
-            return;     // Не обновляем список при ошибке
+            alert(msg);
         }
-        getOfficeList();    // Обновляем список только при успешном выполнении
-        getTotal();         //Обновляем сумму после каждого успешного действия
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        getOfficeList();
-        getTotal();
+        callback && callback(data);
     });
+}
+
+function updateOfficeList() {
+    sendRequest('info', null, (data) => {
+        const ul = document.getElementById('office-list');
+        ul.innerHTML = '';
+        data.result.forEach(office => {
+            const li = document.createElement('li');
+            li.textContent = `${office.number} (цена: ${office.price}): ` + 
+                (office.tenant ? `арендован ${office.tenant}` : 'свободен');
+
+            const btn = document.createElement('button');
+            if(!office.tenant){
+                btn.textContent = 'зарезервировать';
+                btn.onclick = () => { booking(office.number); };
+            } else {
+                btn.textContent = 'освободить';
+                btn.onclick = () => { cancellation(office.number); };
+            }
+            li.appendChild(btn);
+            ul.appendChild(li);
+        });
+    });
+}
+
+function updateTotal() {
+    sendRequest('total', null, (data) => {
+        if(!data.error){
+            document.getElementById('total-price').innerText = data.result;
+        }
+    });
+}
+
+function booking(number) {
+    sendRequest('booking', number, () => { updateOfficeList(); updateTotal(); });
+}
+
+function cancellation(number) {
+    sendRequest('cancellation', number, () => { updateOfficeList(); updateTotal(); });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateOfficeList();
+    updateTotal();
+});
 </script>
 {% endblock %}
-
-
-
