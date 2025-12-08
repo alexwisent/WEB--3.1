@@ -2,6 +2,15 @@
 
 {% block lab %}Лабораторная работа 6{% endblock %}
 
+{% block main %}
+    <h1>Список кабинетов</h1>
+    <ul id="office-list"></ul>
+
+    <h2>Общая стоимость вашей аренды:</h2>
+    <p id="total-price">0</p>
+{% endblock %}
+
+
 {% block script %}
 <script>
     function getOfficeList() {
@@ -149,12 +158,5 @@
 </script>
 {% endblock %}
 
-{% block main %}
-    <h1>Список кабинетов</h1>
-    <ul id="office-list"></ul>
-
-    <h2>Общая стоимость вашей аренды:</h2>
-    <p id="total-price">0</p>
-{% endblock %}
 
 
