@@ -3,11 +3,65 @@
 {% block lab %}Лабораторная работа 6{% endblock %}
 
 {% block main %}
-    <h1>Список кабинетов</h1>
-    <ul id="office-list"></ul>
+    <style>
+        /* Основной контейнер страницы */
+        .office-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid orange;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #fff8f0;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ff6600;
+        }
+        /* Список офисов */
+        #office-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        #office-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #ffcc99;
+            border-radius: 6px;
+            background-color: #fff2e6;
+        }
+        #office-list li button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid orange;
+            border-radius: 5px;
+            background-color: #ffedcc;
+            transition: background-color 0.2s;
+        }
+        #office-list li button:hover {
+            background-color: #ffd699;
+        }
+        /* Общая сумма аренды */
+        .total-price {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 18px;
+            color: #ff6600;
+        }
+    </style>
 
-    <h2>Общая стоимость вашей аренды:</h2>
-    <p id="total-price">0</p>
+    <div class="office-container">
+        <h1>Список кабинетов</h1>
+        <ul id="office-list"></ul>
+
+        <h2>Общая стоимость вашей аренды:</h2>
+        <p id="total-price" class="total-price">0</p>
+    </div>
 {% endblock %}
 
 
