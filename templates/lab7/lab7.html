@@ -4,7 +4,32 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='lab7/main.js') }}"></script>
-<style></style>
+<style>
+    .modal {
+        display: none;
+        z-index: 100;
+        box-shadow: 3px 3px 5px black;
+        background: white;
+        width: 800px; /* Увеличили в 2 раза (было 400px) */
+        left: 50%;
+        top: 220px;
+        margin-left: -400px; /* Увеличили в 2 раза (было -200px) */
+        position: absolute;
+        padding: 20px;
+    }
+    
+    /* Добавляем стили для textarea */
+    textarea {
+        resize: vertical; /* Разрешаем изменение размера только по вертикали */
+        max-width: 100%; /* Не позволяем выходить за пределы родительского элемента */
+        box-sizing: border-box; /* Учитываем padding и border в общей ширине */
+    }
+    
+    /* Делаем textarea шириной 100% от родителя */
+    .modal textarea {
+        width: 100%;
+    }
+</style>
 {% endblock %}
 
 {% block main %}
@@ -26,5 +51,34 @@
 
     <div style="margin-top: 20px;">
         <button onclick="addFilm()">Добавить фильм</button>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования -->
+    <div class="modal">
+        <input type="hidden" id="id">
+        
+        <label>
+            Название фильма на русском:
+            <input type="text" id="title-ru">
+        </label><br>
+        
+        <label>
+            Название фильма на оригинальном языке:
+            <i>(если фильм русский, то оставьте пустым)</i>
+            <input type="text" id="title">
+        </label><br>
+        
+        <label>
+            Год выпуска:
+            <input type="number" id="year">
+        </label><br>
+        
+        <label>
+            Описание:
+            <textarea id="description" rows="4"></textarea> <!-- Добавил rows для начальной высоты -->
+        </label><br>
+        
+        <button onclick="sendFilm()">OK</button>
+        <button onclick="cancel()">Отмена</button>
     </div>
 {% endblock %}

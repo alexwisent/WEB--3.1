@@ -68,12 +68,70 @@ function deleteFilm(id, title) {
         });
 }
 
-function editFilm(id) {
-    alert('Редактирование фильма ' + id);
+function showModal() {
+    document.querySelector('div.modal').style.display ='block';
 }
 
-function addFilm() {
-    alert('Добавление нового фильма');
+function hideModal() {
+    document.querySelector('div.modal').style.display ='none';
+}
+
+function cancel() {
+    hideModal();
+}
+
+
+function addFilm() { 
+    document.getElementById('id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title-ru').value = '';
+    document.getElementById('year').value = ''; 
+    document.getElementById('description').value = '';
+    showModal();
+}
+
+function sendFilm() {
+    const film = {
+        title: document.getElementById('title').value,
+        title_ru: document.getElementById('title-ru').value,
+        year: document.getElementById('year').value,
+        description: document.getElementById('description').value
+    };
+    
+    if (!film.title_ru.trim()) {        // Проверка обязательных полей
+        alert('Введите русское название фильма');
+        return;
+    }
+    if (!film.year) {
+        alert('Введите год выпуска фильма');
+        return;
+    }
+    
+    const url = `/lab7/rest-api/films/`;
+    const method = 'POST';
+
+    fetch(url, {
+        method: method,
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(film)
+    })
+    .then(function(response) {
+        if (response.ok) {
+            fillFilmList();
+            hideModal();
+        } else {
+            alert('Ошибка при добавлении фильма');
+        }
+    })
+    .catch(function(error) {
+        console.error('Ошибка при добавлении фильма:', error);
+        alert('Ошибка сети при добавлении фильма');
+    });
+}
+
+function editFilm(id) {
+    // Пока заглушка - нужно реализовать
+    alert('Редактирование фильма ' + id + ' (будет реализовано позже)');
 }
 
 // Загружаем список фильмов при загрузке страницы
