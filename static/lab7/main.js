@@ -46,7 +46,6 @@ function fillFilmList() {
     });
 }
 
-// ИСПРАВЛЕННАЯ ФУНКЦИЯ УДАЛЕНИЯ
 function deleteFilm(id, title) {
     if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
         return;

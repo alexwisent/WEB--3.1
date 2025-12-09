@@ -43,14 +43,16 @@ films = [
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return jsonify(films)  # Используйте jsonify!
+    return jsonify(films)  
+
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
     if 0 <= id < len(films):
-        return jsonify(films[id])  # Используйте jsonify!
+        return jsonify(films[id])  
     else:
         abort(404, description="Фильм с таким id не найден")
+
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
@@ -60,19 +62,21 @@ def del_film(id):
     else:
         abort(404, description="Фильм с таким id не найден")
 
+
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
     if 0 <= id < len(films):
         film = request.get_json()
         films[id] = film
-        return jsonify(films[id])  # Используйте jsonify!
+        return jsonify(films[id])  
     else:
         abort(404, description="Фильм с таким id не найден")
+
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
     films.append(film)
     new_id = len(films) - 1
-    return jsonify({"id": new_id}), 201  # Используйте jsonify!
+    return jsonify({"id": new_id}), 201 
 
