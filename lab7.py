@@ -63,5 +63,21 @@ def del_film(id):
         abort(404, description="Фильм с таким id не найден")
 
 
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+def put_film(id):
+    if 0 <= id < len(films):                 # проверка корректного id
+        film = request.get_json()            # получаем данные фильма из запроса
+        films[id] = film                     # обновляем фильм
+        return films[id]
+    else:
+        abort(404, description="Фильм с таким id не найден")
+
+
+@lab7.route('/lab7/rest-api/films/', methods=['POST'])
+def add_film():
+    film = request.get_json()   # получаем данные фильма из тела запроса
+    films.append(film)          # добавляем фильм в конец списка
+    new_id = len(films) - 1     # индекс нового фильма
+    return {"id": new_id}, 201  
 
 
