@@ -21,7 +21,7 @@ function fillFilmList() {
             let editButton = document.createElement('button'); 
             editButton.innerText = 'редактировать';
             editButton.onclick = function() {
-                editFilm(i);      // Добавьте обработчик
+                editFilm(i);
             };
 
             let delButton = document.createElement('button'); 
@@ -46,16 +46,18 @@ function fillFilmList() {
     });
 }
 
-
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ УДАЛЕНИЯ
 function deleteFilm(id, title) {
     if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
         return;
     }
 
     fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
-        .then(function (response) {  // Добавлена точка перед then
+        .then(function (response) {
             if (response.status === 204) {
                 fillFilmList();  // Обновляем список после удаления
+            } else if (response.status === 404) {
+                alert('Фильм не найден');
             } else {
                 console.error('Ошибка при удалении:', response.status);
                 alert('Ошибка при удалении фильма');
@@ -65,16 +67,17 @@ function deleteFilm(id, title) {
             console.error('Ошибка при удалении:', error);
             alert('Ошибка сети при удалении фильма');
         });
-}     
-
+}
 
 function editFilm(id) {
-    // Пока заглушка - нужно реализовать
     alert('Редактирование фильма ' + id);
 }
 
-
 function addFilm() {
-    // Пока заглушка - нужно реализовать
     alert('Добавление нового фильма');
 }
+
+// Загружаем список фильмов при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    fillFilmList();
+});
