@@ -4,7 +4,7 @@ function fillFilmList() {
         return data.json();
     })
     .then(function (films) {
-        let tbody = document.getElementById('film-list');  // getElementById, а не getElementBy
+        let tbody = document.getElementById('film-list');  
         tbody.innerHTML = '';
         for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
@@ -14,15 +14,14 @@ function fillFilmList() {
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            // Исправлены опечатки:
-            tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title;  // .title, а не .titl
+            tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title; 
             tdTitleRus.innerText = films[i].title_ru;
-            tdYear.innerText = films[i].year;  // .year, а не .vear
+            tdYear.innerText = films[i].year;   
 
             let editButton = document.createElement('button'); 
             editButton.innerText = 'редактировать';
             editButton.onclick = function() {
-                editFilm(i);  // Добавьте обработчик
+                editFilm(i);      // Добавьте обработчик
             };
 
             let delButton = document.createElement('button'); 
@@ -47,23 +46,33 @@ function fillFilmList() {
     });
 }
 
+
 function deleteFilm(id, title) {
-    if (!confirm('Вы точно хотите удалить фильм "' + title + '"?')) {
+    if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
         return;
     }
-    fetch('/lab7/rest-api/films/' + id, {method: 'DELETE'})
-        .then(function() {
-            fillFilmList(); // Обновляем список после удаления
+
+    fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
+        .then(function (response) {  // Добавлена точка перед then
+            if (response.status === 204) {
+                fillFilmList();  // Обновляем список после удаления
+            } else {
+                console.error('Ошибка при удалении:', response.status);
+                alert('Ошибка при удалении фильма');
+            }
         })
         .catch(function(error) {
             console.error('Ошибка при удалении:', error);
+            alert('Ошибка сети при удалении фильма');
         });
-}
+}     
+
 
 function editFilm(id) {
     // Пока заглушка - нужно реализовать
     alert('Редактирование фильма ' + id);
 }
+
 
 function addFilm() {
     // Пока заглушка - нужно реализовать
