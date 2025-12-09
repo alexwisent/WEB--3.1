@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, jsonify
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -43,41 +43,36 @@ films = [
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return films
+    return jsonify(films)  # Используйте jsonify!
 
-
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])   # Получение фильмов
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
     if 0 <= id < len(films):
-        return films[id]
+        return jsonify(films[id])  # Используйте jsonify!
     else:
         abort(404, description="Фильм с таким id не найден")
 
-
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])    # Удаление фильма
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
     if 0 <= id < len(films):
         del films[id]
-        return '', 204   # при попытке удалить фильм, которого нет
+        return '', 204
     else:
         abort(404, description="Фильм с таким id не найден")
-
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    if 0 <= id < len(films):                 # проверка корректного id
-        film = request.get_json()            # получаем данные фильма из запроса
-        films[id] = film                     # обновляем фильм
-        return films[id]
+    if 0 <= id < len(films):
+        film = request.get_json()
+        films[id] = film
+        return jsonify(films[id])  # Используйте jsonify!
     else:
         abort(404, description="Фильм с таким id не найден")
 
-
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
-    film = request.get_json()   # получаем данные фильма из тела запроса
-    films.append(film)          # добавляем фильм в конец списка
-    new_id = len(films) - 1     # индекс нового фильма
-    return {"id": new_id}, 201  
-
+    film = request.get_json()
+    films.append(film)
+    new_id = len(films) - 1
+    return jsonify({"id": new_id}), 201  # Используйте jsonify!
 
