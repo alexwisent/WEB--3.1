@@ -14,9 +14,9 @@ function fillFilmList() {
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title; 
+            tdTitle.innerText = films[i].title;
             tdTitleRus.innerText = films[i].title_ru;
-            tdYear.innerText = films[i].year;   
+            tdYear.innerText = films[i].year;  
 
             let editButton = document.createElement('button'); 
             editButton.innerText = 'редактировать';
@@ -110,6 +110,11 @@ function sendFilm() {
         return;
     }
     
+    if (!film.title.trim() && film.title_ru.trim()) {
+        film.title = film.title_ru;
+        document.getElementById('title').value = film.title;    // Также обновляем значение в поле ввода, чтобы пользователь видел
+    }
+
     const url = `/lab7/rest-api/films/${id}`;
     const method = id === '' ? 'POST' : 'PUT';
 
@@ -139,7 +144,9 @@ function editFilm(id) {
     })
     .then(function (film) {
         document.getElementById('id').value = id;
-        document.getElementById('title').value = film.title;
+        
+        
+        document.getElementById('title').value = film.title || film.title_ru;   // Прямое присваивание с проверкой
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
