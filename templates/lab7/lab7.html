@@ -10,23 +10,39 @@
         z-index: 100;
         box-shadow: 3px 3px 5px black;
         background: white;
-        width: 800px; /* Увеличили в 2 раза (было 400px) */
+        width: 800px;
         left: 50%;
         top: 220px;
-        margin-left: -400px; /* Увеличили в 2 раза (было -200px) */
+        margin-left: -400px;
         position: absolute;
         padding: 20px;
     }
     textarea {
-        resize: vertical; /* Разрешаем изменение размера только по вертикали */
-        max-width: 100%; /* Не позволяем выходить за пределы родительского элемента */
-        box-sizing: border-box; /* Учитываем padding и border в общей ширине */
+        resize: vertical;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     .modal textarea {
         width: 100%;
     }
     .error-message {
         color: red;
+    }
+    
+    /* НОВЫЕ СТИЛИ */
+    h1 {
+        text-align: center;
+    }
+    table {
+        margin: 0 auto;
+        border: 3px solid green;
+        border-radius: 10px;
+        border-collapse: separate;
+        overflow: hidden;
+        border-spacing: 10px; /* Расстояние между столбцами */
+    }
+    th, td {
+        padding: 10px; /* Внутренние отступы в ячейках */
     }
 </style>
 {% endblock %}
@@ -48,7 +64,7 @@
         </tbody>
     </table>
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px; text-align: center;">
         <button onclick="addFilm()">Добавить фильм</button>
     </div>
 
