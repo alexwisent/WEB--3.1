@@ -17,17 +17,16 @@
         position: absolute;
         padding: 20px;
     }
-    
-    /* Добавляем стили для textarea */
     textarea {
         resize: vertical; /* Разрешаем изменение размера только по вертикали */
         max-width: 100%; /* Не позволяем выходить за пределы родительского элемента */
         box-sizing: border-box; /* Учитываем padding и border в общей ширине */
     }
-    
-    /* Делаем textarea шириной 100% от родителя */
     .modal textarea {
         width: 100%;
+    }
+    .error-message {
+        color: red;
     }
 </style>
 {% endblock %}
@@ -75,7 +74,8 @@
         
         <label>
             Описание:
-            <textarea id="description" rows="4"></textarea> <!-- Добавил rows для начальной высоты -->
+            <textarea id="description"></textarea>
+            <div id="description-error" class="error-message"></div>
         </label><br>
         
         <button onclick="sendFilm()">OK</button>

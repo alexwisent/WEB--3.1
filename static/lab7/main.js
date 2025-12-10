@@ -99,6 +99,8 @@ function sendFilm() {
         description: document.getElementById('description').value
     };
     
+    document.getElementById('description-error').innerText = '';    // Очищаем предыдущие ошибки
+    
     if (!film.title_ru.trim()) {        // Проверка обязательных полей
         alert('Введите русское название фильма');
         return;
@@ -120,13 +122,13 @@ function sendFilm() {
         if (response.ok) {
             fillFilmList();
             hideModal();
-        } else {
-            alert('Ошибка при добавлении фильма');
-        }
+            return {};
+        } 
+        return response.json();
     })
-    .catch(function(error) {
-        console.error('Ошибка при добавлении фильма:', error);
-        alert('Ошибка сети при добавлении фильма');
+    .then(function(errors){ 
+        if(errors.description) 
+            document.getElementById('description-error').innerText = errors.description;
     });
 }
 
@@ -141,11 +143,17 @@ function editFilm(id) {
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
+
+        document.getElementById('description-error').innerText = '';    // Очищаем ошибку при редактировании
+
         showModal();
+    })
+    .catch(function(error) {
+        console.error('Ошибка при загрузке фильма:', error);
+        alert('Ошибка при загрузке фильма');
     });
 }
 
-// Загружаем список фильмов при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {      // Загружаем список фильмов при загрузке страницы
     fillFilmList();
 });
