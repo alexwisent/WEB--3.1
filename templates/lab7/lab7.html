@@ -28,8 +28,6 @@
     .error-message {
         color: red;
     }
-    
-    /* НОВЫЕ СТИЛИ */
     h1 {
         text-align: center;
     }
@@ -44,6 +42,10 @@
     th, td {
         padding: 10px; /* Внутренние отступы в ячейках */
     }
+    table td:nth-child(2) {     /* оригинальное назване */
+        font-style: italic;
+        color: #666;
+    }
 </style>
 {% endblock %}
 
@@ -53,8 +55,8 @@
     <table>
         <thead>
             <tr>
-                <th>Оригинальное название</th>
                 <th>Русское название</th>
+                <th>Оригинальное название</th>
                 <th>Год</th>
                 <th>Действия</th>
             </tr>
