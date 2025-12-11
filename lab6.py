@@ -6,10 +6,7 @@ from os import path
 
 lab6 = Blueprint('lab6', __name__)
 
-# ------------------------
-# Универсальное подключение к БД
-# ------------------------
-def db_connect():
+def db_connect():       # Подключаемся к PostgreSQL или SQLite в зависимости от конфигурации
     if current_app.config['DB_TYPE'] == 'postgres':
         conn = psycopg2.connect(
             host='127.0.0.1',
@@ -22,16 +19,16 @@ def db_connect():
         dir_path = path.dirname(path.realpath(__file__))
         db_path = path.join(dir_path, "database.db")
         conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
+        conn.row_factory = sqlite3.Row      # Для получения строк в виде словарей
         cur = conn.cursor()
 
     return conn, cur
 
 
-def db_close(conn, cur):
-    conn.commit()
-    cur.close()
-    conn.close()
+def db_close(conn, cur):        # Функция закрытия соединения с БД
+    conn.commit()       # Сохраняем изменения
+    cur.close()         # Закрываем курсор
+    conn.close()        # Закрываем соединение
 
 
 # ------------------------
@@ -39,7 +36,7 @@ def db_close(conn, cur):
 # ------------------------
 @lab6.route('/lab6/')
 def main():
-    return render_template('lab6/lab6.html')
+    return render_template('lab6/lab6.html')    # Отображаем главную страницу лабораторной работы
 
 
 @lab6.route('/lab6/json-rpc-api/', methods=['POST'])
@@ -48,32 +45,25 @@ def api():
     id = data['id']
     method = data['method']
 
-    conn, cur = db_connect()
+    conn, cur = db_connect()        # Устанавливаем соединение с БД
 
-    # ------------------------
-    # Метод info — список офисов
-    # ------------------------
-    if method == 'info':
+    if method == 'info':        # получение списка всех офисов
         if current_app.config['DB_TYPE'] == 'postgres':
             cur.execute("SELECT * FROM offices ORDER BY number;")
         else:
             cur.execute("SELECT * FROM offices ORDER BY number;")
 
-        offices = [dict(row) for row in cur.fetchall()]
+        offices = [dict(row) for row in cur.fetchall()]     # Преобразуем в словари
         db_close(conn, cur)
         return {"jsonrpc": "2.0", "result": offices, "id": id}
 
-    # Проверка авторизации
-    login = session.get('login')
+    login = session.get('login')        # Проверка авторизации пользователя
     if not login:
         db_close(conn, cur)
         return {"jsonrpc": "2.0", "error": {"code": 1, "message": "Unauthorized"}, "id": id}
 
-    # ------------------------
-    # Бронирование кабинета
-    # ------------------------
-    if method == 'booking':
-        office_number = data['params']
+    if method == 'booking':     # Бронирование кабинета
+        office_number = data['params']      # Номер офиса для бронирования
         query = "SELECT tenant FROM offices WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
         cur.execute(query, (office_number,))
         office = cur.fetchone()
@@ -86,18 +76,15 @@ def api():
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": 2, "message": "Already booked"}, "id": id}
 
-        # обновляем аренду
+        # Бронируем офис для текущего пользователя
         query = "UPDATE offices SET tenant=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?") + " WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
         cur.execute(query, (login, office_number))
         db_close(conn, cur)
         return {"jsonrpc": "2.0", "result": "success", "id": id}
 
-    # ------------------------
-    # Отмена аренды
-    # ------------------------
-    if method == 'cancellation':
-        office_number = data['params']
-        query = "SELECT tenant FROM offices WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
+    if method == 'cancellation':        # Отмена аренды
+        office_number = data['params']  # Номер офиса для освобождения
+        query = "SELECT tenant FROM offices WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")       # Проверяем, существует ли офис
         cur.execute(query, (office_number,))
         office = cur.fetchone()
 
@@ -113,23 +100,19 @@ def api():
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": 4, "message": "Вы можете снять только свою аренду"}, "id": id}
 
+        # Освобождаем офис (устанавливаем tenant в NULL)
         query = "UPDATE offices SET tenant=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?") + " WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
         cur.execute(query, (None, office_number))
         db_close(conn, cur)
         return {"jsonrpc": "2.0", "result": "success", "id": id}
 
-    # ------------------------
-    # Общая стоимость аренды
-    # ------------------------
-    if method == 'total':
+    if method == 'total':       # Общая стоимость аренды
         query = "SELECT SUM(price) as total FROM offices WHERE tenant=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
         cur.execute(query, (login,))
         total = cur.fetchone()['total'] or 0
         db_close(conn, cur)
         return {"jsonrpc": "2.0", "result": total, "id": id}
 
-    # ------------------------
-    # Неизвестный метод
-    # ------------------------
-    db_close(conn, cur)
+    db_close(conn, cur)     # Неизвестный метод
     return {"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": id}
+

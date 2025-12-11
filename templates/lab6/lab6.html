@@ -63,7 +63,7 @@
 
 {% block script %}
 <script>
-function sendRequest(method, params, callback) {
+function sendRequest(method, params, callback) {        // Функция для отправки JSON-RPC запросов
     const url = '/lab6/json-rpc-api/';
     const json = {
         'jsonrpc': '2.0',
@@ -72,14 +72,14 @@ function sendRequest(method, params, callback) {
         'id': Math.floor(Math.random() * 10000)
     };
 
-    fetch(url, {
+    fetch(url, {            // Отправляем POST запрос на сервер
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(json)
     })
-    .then(r => r.json())
+    .then(r => r.json())        // Преобразуем ответ в JSON
     .then(data => {
-        if (data.error) {
+        if (data.error) {       // Обрабатываем ошибки от сервера
             let msg = '';
             switch(data.error.code){
                 case 1: msg='Вы не авторизованы'; break;
@@ -88,23 +88,23 @@ function sendRequest(method, params, callback) {
                 case 4: msg='Нельзя снять чужую аренду'; break;
                 default: msg = data.error.message;
             }
-            alert(msg);
+            alert(msg);     // Показываем сообщение об ошибке
         }
         callback && callback(data);
     });
 }
 
-function updateOfficeList() {
-    sendRequest('info', null, (data) => {
+function updateOfficeList() {       // Функция обновления списка офисов на странице
+    sendRequest('info', null, (data) => {       // Запрашиваем информацию об офисах
         const ul = document.getElementById('office-list');
-        ul.innerHTML = '';
-        data.result.forEach(office => {
+        ul.innerHTML = '';      // Очищаем текущий список
+        data.result.forEach(office => {     // Для каждого офиса создаем элемент списка
             const li = document.createElement('li');
-            li.textContent = `${office.number} (цена: ${office.price}): ` + 
+            li.textContent = `${office.number} (цена: ${office.price}): ` +     // Отображаем номер, цену и статус офиса
                 (office.tenant ? `арендован ${office.tenant}` : 'свободен');
 
             const btn = document.createElement('button');
-            if(!office.tenant){
+            if(!office.tenant){     // В зависимости от статуса офиса создаем соответствующую кнопку
                 btn.textContent = 'зарезервировать';
                 btn.onclick = () => { booking(office.number); };
             } else {
@@ -117,7 +117,7 @@ function updateOfficeList() {
     });
 }
 
-function updateTotal() {
+function updateTotal() {        // Функция обновления общей стоимости аренды
     sendRequest('total', null, (data) => {
         if(!data.error){
             document.getElementById('total-price').innerText = data.result;
@@ -125,17 +125,21 @@ function updateTotal() {
     });
 }
 
-function booking(number) {
-    sendRequest('booking', number, () => { updateOfficeList(); updateTotal(); });
+function booking(number) {      // Функция бронирования офиса
+    sendRequest('booking', number, () => { 
+        updateOfficeList();     // Обновляем список офисов
+        updateTotal(); });      // Обновляем общую стоимость
 }
 
-function cancellation(number) {
-    sendRequest('cancellation', number, () => { updateOfficeList(); updateTotal(); });
+function cancellation(number) {     // Функция отмены аренды офиса
+    sendRequest('cancellation', number, () => { 
+        updateOfficeList();     // Обновляем список офисов
+        updateTotal(); });      // Обновляем общую стоимость
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateOfficeList();
-    updateTotal();
+document.addEventListener('DOMContentLoaded', () => {       // Инициализация при загрузке страницы
+    updateOfficeList();     // Загружаем список офисов
+    updateTotal();          // Загружаем общую стоимость
 });
 </script>
 {% endblock %}
