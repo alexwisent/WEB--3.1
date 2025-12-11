@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, abort, jsonify
+from datetime import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -67,15 +68,48 @@ def del_film(id):
 def put_film(id):
     if 0 <= id < len(films):
         film = request.get_json()
-
-        if not film.get('title', '').strip() and film.get('title_ru', '').strip():  # если оригинальное название пустое, используем русское
+        errors = {}
+        
+        # 1. Проверка русского названия (должно быть непустым)
+        if not film.get('title_ru', '').strip():
+            errors['title_ru'] = 'Введите русское название фильма'
+        
+        # 2. Проверка оригинального названия (должно быть непустым, если русское пустое)
+        if not film.get('title_ru', '').strip() and not film.get('title', '').strip():
+            errors['title'] = 'Введите оригинальное название, если русское название пустое'
+        
+        # Если оба названия пустые, оригинальное не проверяем отдельно
+        # Но если нужно оригинальное всегда непустое, когда русское пустое:
+        if not film.get('title_ru', '').strip() and not film.get('title', '').strip():
+            if 'title' not in errors:
+                errors['title'] = 'Введите оригинальное название'
+        
+        # 3. Проверка года (должен быть от 1895 до текущего)
+        try:
+            year = int(film.get('year', 0))
+            current_year = datetime.now().year
+            if year < 1895 or year > current_year:
+                errors['year'] = f'Год должен быть от 1895 до {current_year}'
+        except (ValueError, TypeError):
+            errors['year'] = 'Год должен быть числом'
+        
+        # 4. Проверка описания (непустое и не более 2000 символов)
+        description = film.get('description', '')
+        if not description.strip():
+            errors['description'] = 'Заполните описание'
+        elif len(description) > 2000:
+            errors['description'] = 'Описание не должно превышать 2000 символов'
+        
+        # Если есть ошибки, возвращаем их
+        if errors:
+            return jsonify(errors), 400
+        
+        # Логика: если оригинальное название пустое, используем русское
+        if not film.get('title', '').strip() and film.get('title_ru', '').strip():
             film['title'] = film['title_ru']
-
-        if film['description'] == "":       # проверка описания
-            return {'description': 'Заполните описание'}, 400
         
         films[id] = film
-        return jsonify(films[id])  
+        return jsonify(films[id])
     else:
         abort(404, description="Фильм с таким id не найден")
 
@@ -83,14 +117,47 @@ def put_film(id):
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
-
-    if not film.get('title', '').strip() and film.get('title_ru', '').strip():  # если оригинальное название пустое, используем русское
+    errors = {}
+    
+    # 1. Проверка русского названия (должно быть непустым)
+    if not film.get('title_ru', '').strip():
+        errors['title_ru'] = 'Введите русское название фильма'
+    
+    # 2. Проверка оригинального названия (должно быть непустым, если русское пустое)
+    if not film.get('title_ru', '').strip() and not film.get('title', '').strip():
+        errors['title'] = 'Введите оригинальное название, если русское название пустое'
+    
+    # Если оба названия пустые, оригинальное не проверяем отдельно
+    # Но если нужно оригинальное всегда непустое, когда русское пустое:
+    if not film.get('title_ru', '').strip() and not film.get('title', '').strip():
+        if 'title' not in errors:
+            errors['title'] = 'Введите оригинальное название'
+    
+    # 3. Проверка года (должен быть от 1895 до текущего)
+    try:
+        year = int(film.get('year', 0))
+        current_year = datetime.now().year
+        if year < 1895 or year > current_year:
+            errors['year'] = f'Год должен быть от 1895 до {current_year}'
+    except (ValueError, TypeError):
+        errors['year'] = 'Год должен быть числом'
+    
+    # 4. Проверка описания (непустое и не более 2000 символов)
+    description = film.get('description', '')
+    if not description.strip():
+        errors['description'] = 'Заполните описание'
+    elif len(description) > 2000:
+        errors['description'] = 'Описание не должно превышать 2000 символов'
+    
+    # Если есть ошибки, возвращаем их
+    if errors:
+        return jsonify(errors), 400
+    
+    # Логика: если оригинальное название пустое, используем русское
+    if not film.get('title', '').strip() and film.get('title_ru', '').strip():
         film['title'] = film['title_ru']
-
-    if film.get('description') == "":       # проверка поисания
-        return {'description': 'Заполните описание'}, 400
     
     films.append(film)
     new_id = len(films) - 1
-    return jsonify({"id": new_id}), 201 
+    return jsonify({"id": new_id}), 201
 

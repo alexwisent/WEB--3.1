@@ -131,9 +131,24 @@ function sendFilm() {
         } 
         return response.json();
     })
+    // .then(function(errors){ 
+    //     if(errors.description) 
+    //         document.getElementById('description-error').innerText = errors.description;
+    // });
+
     .then(function(errors){ 
-        if(errors.description) 
-            document.getElementById('description-error').innerText = errors.description;
+        if (errors) {
+            // Показываем все ошибки в alert для простоты
+            let errorMessages = [];
+            if (errors.title) errorMessages.push(errors.title);
+            if (errors.title_ru) errorMessages.push(errors.title_ru);
+            if (errors.year) errorMessages.push(errors.year);
+            if (errors.description) errorMessages.push(errors.description);
+            
+            if (errorMessages.length > 0) {
+                alert('Ошибки:\n' + errorMessages.join('\n'));
+            }
+        }
     });
 }
 
