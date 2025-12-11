@@ -16,18 +16,18 @@ function fillFilmList() {
 
             tdTitle.innerText = films[i].title;
             tdTitleRus.innerText = films[i].title_ru;
-            tdYear.innerText = films[i].year;  
+            tdYear.innerText = films[i].year || '';
 
             let editButton = document.createElement('button'); 
             editButton.innerText = 'редактировать';
             editButton.onclick = function() {
-                editFilm(i);
+                editFilm(films[i].id);  // <-- Используем ID из БД, а не индекс i
             };
 
             let delButton = document.createElement('button'); 
             delButton.innerText = 'удалить';
             delButton.onclick = function() {
-                deleteFilm(i, films[i].title_ru);
+                deleteFilm(films[i].id, films[i].title_ru);  // <-- Используем ID из БД
             };
 
             tdActions.append(editButton);
@@ -115,7 +115,7 @@ function sendFilm() {
         document.getElementById('title').value = film.title;    // Также обновляем значение в поле ввода, чтобы пользователь видел
     }
 
-    const url = `/lab7/rest-api/films/${id}`;
+    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
     const method = id === '' ? 'POST' : 'PUT';
 
     fetch(url, {
@@ -131,14 +131,8 @@ function sendFilm() {
         } 
         return response.json();
     })
-    // .then(function(errors){ 
-    //     if(errors.description) 
-    //         document.getElementById('description-error').innerText = errors.description;
-    // });
-
     .then(function(errors){ 
         if (errors) {
-            // Показываем все ошибки в alert для простоты
             let errorMessages = [];
             if (errors.title) errorMessages.push(errors.title);
             if (errors.title_ru) errorMessages.push(errors.title_ru);
@@ -160,8 +154,7 @@ function editFilm(id) {
     .then(function (film) {
         document.getElementById('id').value = id;
         
-        
-        document.getElementById('title').value = film.title || film.title_ru;   // Прямое присваивание с проверкой
+        document.getElementById('title').value = film.title || film.title_ru;
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
