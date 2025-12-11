@@ -1,44 +1,44 @@
-function fillFilmList() {
-    fetch('/lab7/rest-api/films/')
+function fillFilmList() {       // Функция для заполнения таблицы со списком фильмов
+    fetch('/lab7/rest-api/films/')      // Отправляем GET-запрос на сервер для получения списка фильмов
     .then(function (data) {
-        return data.json();
+        return data.json();     // Преобразуем ответ в JSON
     })
     .then(function (films) {
         let tbody = document.getElementById('film-list');  
         tbody.innerHTML = '';
-        for(let i = 0; i < films.length; i++) {
-            let tr = document.createElement('tr');
+        for(let i = 0; i < films.length; i++) {         // Перебираем все полученные фильмы
+            let tr = document.createElement('tr');      // Создаем строку таблицы
 
-            let tdTitle = document.createElement('td');
+            let tdTitle = document.createElement('td');     // Создаем ячейки для каждого поля фильма
             let tdTitleRus = document.createElement('td');
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            tdTitle.innerText = films[i].title;
+            tdTitle.innerText = films[i].title;     // Заполняем ячейки данными из объекта фильма
             tdTitleRus.innerText = films[i].title_ru;
             tdYear.innerText = films[i].year || '';
 
-            let editButton = document.createElement('button'); 
+            let editButton = document.createElement('button');      // Создаем кнопку "редактировать"
             editButton.innerText = 'редактировать';
             editButton.onclick = function() {
-                editFilm(films[i].id);  // <-- Используем ID из БД, а не индекс i
+                editFilm(films[i].id);      // Используем ID из БД, а не индекс массива
             };
 
-            let delButton = document.createElement('button'); 
+            let delButton = document.createElement('button');   // Создаем кнопку "удалить"
             delButton.innerText = 'удалить';
             delButton.onclick = function() {
-                deleteFilm(films[i].id, films[i].title_ru);  // <-- Используем ID из БД
+                deleteFilm(films[i].id, films[i].title_ru);  // Передаем ID и название для подтверждения
             };
 
-            tdActions.append(editButton);
+            tdActions.append(editButton);       // Добавляем кнопки в ячейку действий
             tdActions.append(delButton);
 
-            tr.append(tdTitleRus);
+            tr.append(tdTitleRus);      // Добавляем ячейки в строку таблицы: русское название, оригинальное название, год, действия
             tr.append(tdTitle);
             tr.append(tdYear);
             tr.append(tdActions);
 
-            tbody.append(tr);
+            tbody.append(tr);       // Добавляем строку в таблицу
         }
     })
     .catch(function(error) {
@@ -46,12 +46,12 @@ function fillFilmList() {
     });
 }
 
-function deleteFilm(id, title) {
-    if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
+function deleteFilm(id, title) {        // Функция для удаления фильма
+    if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {        // Показываем диалог подтверждения удаления
         return;
     }
 
-    fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
+    fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})     // Отправляем DELETE-запрос на сервер
         .then(function (response) {
             if (response.status === 204) {
                 fillFilmList();  // Обновляем список после удаления
@@ -68,30 +68,30 @@ function deleteFilm(id, title) {
         });
 }
 
-function showModal() {
+function showModal() {      // Функция для показа модального окна
     document.querySelector('div.modal').style.display ='block';
 }
 
-function hideModal() {
+function hideModal() {      // Функция для скрытия модального окна
     document.querySelector('div.modal').style.display ='none';
 }
 
-function cancel() {
+function cancel() {     // Функция для отмены действия и закрытия модального окна
     hideModal();
 }
 
 
-function addFilm() { 
-    document.getElementById('id').value = '';
-    document.getElementById('title').value = '';
-    document.getElementById('title-ru').value = '';
-    document.getElementById('year').value = ''; 
-    document.getElementById('description').value = '';
-    showModal();
+function addFilm() {    // Функция для подготовки формы к добавлению нового фильма
+    document.getElementById('id').value = '';           // Очищаем скрытое поле ID
+    document.getElementById('title').value = '';        // Очищаем поле оригинального названия
+    document.getElementById('title-ru').value = '';     // Очищаем поле русского названия
+    document.getElementById('year').value = '';         // Очищаем поле года
+    document.getElementById('description').value = '';  // Очищаем поле описания
+    showModal();        // Показываем модальное окно
 }
 
-function sendFilm() {
-    const id = document.getElementById('id').value;
+function sendFilm() {       // Функция для отправки данных фильма на сервер. Отправляет POST-запрос для создания или PUT-запрос для обновления фильма
+    const id = document.getElementById('id').value;     // Получаем значения из формы
     const film = {
         title: document.getElementById('title').value,
         title_ru: document.getElementById('title-ru').value,
@@ -110,20 +110,20 @@ function sendFilm() {
         return;
     }
     
-    if (!film.title.trim() && film.title_ru.trim()) {
+    if (!film.title.trim() && film.title_ru.trim()) {       // Логика: если оригинальное название пустое, используем русское
         film.title = film.title_ru;
         document.getElementById('title').value = film.title;    // Также обновляем значение в поле ввода, чтобы пользователь видел
     }
 
-    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
+    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;     // Определяем URL и метод HTTP в зависимости от того, редактируем или добавляем
     const method = id === '' ? 'POST' : 'PUT';
 
-    fetch(url, {
+    fetch(url, {        // Отправляем запрос на сервер
         method: method,
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(film)
+        headers: {"Content-Type": "application/json"},      // Указываем тип содержимого
+        body: JSON.stringify(film)      // Преобразуем объект в JSON-строку
     })
-    .then(function(response) {
+    .then(function(response) {      // Обрабатываем ответ сервера. Если успешно, обновляем список фильмов и скрываем модальное окно
         if (response.ok) {
             fillFilmList();
             hideModal();
@@ -131,7 +131,7 @@ function sendFilm() {
         } 
         return response.json();
     })
-    .then(function(errors){ 
+    .then(function(errors){         // Обрабатываем ошибки валидации с сервера
         if (errors) {
             let errorMessages = [];
             if (errors.title) errorMessages.push(errors.title);
@@ -139,22 +139,22 @@ function sendFilm() {
             if (errors.year) errorMessages.push(errors.year);
             if (errors.description) errorMessages.push(errors.description);
             
-            if (errorMessages.length > 0) {
+            if (errorMessages.length > 0) {     // Если есть ошибки, показываем их в алерте
                 alert('Ошибки:\n' + errorMessages.join('\n'));
             }
         }
     });
 }
 
-function editFilm(id) {
-    fetch(`/lab7/rest-api/films/${id}`)
+function editFilm(id) {     // Функция для загрузки данных фильма для редактирования
+    fetch(`/lab7/rest-api/films/${id}`)     // Отправляем GET-запрос для получения данных фильма
     .then(function (data) {
         return data.json();
     })
-    .then(function (film) {
-        document.getElementById('id').value = id;
+    .then(function (film) {     // Заполняем форму данными фильма
+        document.getElementById('id').value = id;       // Заполняем скрытое поле ID
         
-        document.getElementById('title').value = film.title || film.title_ru;
+        document.getElementById('title').value = film.title || film.title_ru;       // Если оригинальное название отсутствует, используем русское
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;

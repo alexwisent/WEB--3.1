@@ -7,8 +7,7 @@ from os import path
 
 lab7 = Blueprint('lab7', __name__)
 
-def db_connect():
-    """Подключение к базе данных в зависимости от типа БД"""
+def db_connect():       # Подключение к базе данных в зависимости от типа БД
     if current_app.config['DB_TYPE'] == 'postgres':
         conn = psycopg2.connect(
             host='127.0.0.1',
@@ -27,29 +26,25 @@ def db_connect():
     return conn, cur
 
 
-def db_close(conn, cur):
-    """Закрытие соединения с БД"""
+def db_close(conn, cur):    # Закрытие соединения с БД
     conn.commit()
     cur.close()
     conn.close()
 
 
-def init_db():
-    """Инициализация базы данных с начальными данными"""
+def init_db():      # Инициализация базы данных с начальными данными
     conn, cur = db_connect()
     
     try:
-        # Проверяем, есть ли уже данные в таблице
-        if current_app.config['DB_TYPE'] == 'postgres':
+        if current_app.config['DB_TYPE'] == 'postgres':     # Проверяем, есть ли уже данные в таблице
             cur.execute("SELECT COUNT(*) as count FROM films")
         else:
             cur.execute("SELECT COUNT(*) as count FROM films")
         
         result = cur.fetchone()
-        count = result['count'] if isinstance(result, dict) else result[0]
+        count = result['count'] if isinstance(result, dict) else result[0]      # Извлекаем количество записей в зависимости от типа БД
         
-        # Если таблица пуста, добавляем начальные данные
-        if count == 0:
+        if count == 0:      # Если таблица пуста, добавляем начальные данные
             films = [
                 {
                     "title": "E.T. the Extra-Terrestrial",
@@ -105,8 +100,7 @@ def init_db():
 
 
 @lab7.route('/lab7/')
-def main():
-    # При загрузке страницы проверяем и инициализируем БД
+def main(): # При загрузке страницы проверяем и инициализируем БД
     init_db()
     return render_template('lab7/lab7.html')
 
@@ -116,16 +110,15 @@ def get_films():
     conn, cur = db_connect()
     
     try:
-        cur.execute("SELECT id, title, title_ru, year, description FROM films ORDER BY id")
+        cur.execute("SELECT id, title, title_ru, year, description FROM films ORDER BY id")     # Получаем все фильмы из БД, отсортированные по ID
         films = cur.fetchall()
         
-        # Преобразуем в список словарей
-        result = []
+        result = []     # Преобразуем в список словарей
         for film in films:
             if isinstance(film, dict):
-                result.append(film)
+                result.append(film)     # PostgreSQL уже возвращает словарь
             else:
-                result.append(dict(film))
+                result.append(dict(film))       # SQLite: преобразуем Row в словарь
         
         return jsonify(result)
     except Exception as e:
@@ -140,14 +133,14 @@ def get_film(id):
     conn, cur = db_connect()
     
     try:
-        if current_app.config['DB_TYPE'] == 'postgres':
+        if current_app.config['DB_TYPE'] == 'postgres':     # Получаем фильм по ID
             cur.execute("SELECT id, title, title_ru, year, description FROM films WHERE id = %s", (id,))
         else:
             cur.execute("SELECT id, title, title_ru, year, description FROM films WHERE id = ?", (id,))
         
         film = cur.fetchone()
         
-        if film:
+        if film:        # Возвращаем найденный фильм
             if isinstance(film, dict):
                 return jsonify(film)
             else:
@@ -166,8 +159,7 @@ def del_film(id):
     conn, cur = db_connect()
     
     try:
-        # Сначала проверяем существование фильма
-        if current_app.config['DB_TYPE'] == 'postgres':
+        if current_app.config['DB_TYPE'] == 'postgres':     # Сначала проверяем существование фильма
             cur.execute("SELECT id FROM films WHERE id = %s", (id,))
         else:
             cur.execute("SELECT id FROM films WHERE id = ?", (id,))
@@ -175,13 +167,12 @@ def del_film(id):
         if not cur.fetchone():
             abort(404, description="Фильм с таким id не найден")
         
-        # Удаляем фильм
-        if current_app.config['DB_TYPE'] == 'postgres':
+        if current_app.config['DB_TYPE'] == 'postgres':     # Удаляем фильм
             cur.execute("DELETE FROM films WHERE id = %s", (id,))
         else:
             cur.execute("DELETE FROM films WHERE id = ?", (id,))
         
-        conn.commit()
+        conn.commit()       # Сохраняем удаление
         return '', 204
     except Exception as e:
         print(f"Ошибка при удалении фильма: {e}")
@@ -191,7 +182,7 @@ def del_film(id):
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
-def put_film(id):
+def put_film(id):   # обновление существующего фильма
     conn, cur = db_connect()
     
     try:
@@ -235,7 +226,7 @@ def put_film(id):
         if errors:
             return jsonify(errors), 400
         
-        # Логика: если оригинальное название пустое, используем русское
+        # если оригинальное название пустое, используем русское
         if not film.get('title', '').strip() and film.get('title_ru', '').strip():
             film['title'] = film['title_ru']
         
