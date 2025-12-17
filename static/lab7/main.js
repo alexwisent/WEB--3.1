@@ -4,19 +4,21 @@ function fillFilmList() {       // Функция для заполнения т
         return data.json();     // Преобразуем ответ в JSON
     })
     .then(function (films) {
-        let tbody = document.getElementById('film-list');  
-        tbody.innerHTML = '';
+        let tbody = document.getElementById('film-list');   // Находим тело таблицы
+        tbody.innerHTML = '';    // Очищаем текущее содержимое
         for(let i = 0; i < films.length; i++) {         // Перебираем все полученные фильмы
             let tr = document.createElement('tr');      // Создаем строку таблицы
 
-            let tdTitle = document.createElement('td');     // Создаем ячейки для каждого поля фильма
-            let tdTitleRus = document.createElement('td');
-            let tdYear = document.createElement('td');
-            let tdActions = document.createElement('td');
+            // Создаем ячейки для каждого поля фильма
+            let tdTitle = document.createElement('td');     // Оригинальное название
+            let tdTitleRus = document.createElement('td');  // Русское название
+            let tdYear = document.createElement('td');      // Год выпуска
+            let tdActions = document.createElement('td');   // Описание
 
-            tdTitle.innerText = films[i].title;     // Заполняем ячейки данными из объекта фильма
-            tdTitleRus.innerText = films[i].title_ru;
-            tdYear.innerText = films[i].year || '';
+            // Заполняем ячейки данными из объекта фильма
+            tdTitle.innerText = films[i].title;      // Оригинальное название
+            tdTitleRus.innerText = films[i].title_ru; // Русское название
+            tdYear.innerText = films[i].year || '';   // Год (или пустая строка)
 
             let editButton = document.createElement('button');      // Создаем кнопку "редактировать"
             editButton.innerText = 'редактировать';
@@ -29,14 +31,16 @@ function fillFilmList() {       // Функция для заполнения т
             delButton.onclick = function() {
                 deleteFilm(films[i].id, films[i].title_ru);  // Передаем ID и название для подтверждения
             };
-
-            tdActions.append(editButton);       // Добавляем кнопки в ячейку действий
+            
+            // Добавляем кнопки в ячейку действий
+            tdActions.append(editButton);       
             tdActions.append(delButton);
 
-            tr.append(tdTitleRus);      // Добавляем ячейки в строку таблицы: русское название, оригинальное название, год, действия
-            tr.append(tdTitle);
-            tr.append(tdYear);
-            tr.append(tdActions);
+            // Добавляем ячейки в строку таблицы
+            tr.append(tdTitleRus);  // Русское название
+            tr.append(tdTitle);     // Оригинальное название
+            tr.append(tdYear);      // Год
+            tr.append(tdActions);   // Описание
 
             tbody.append(tr);       // Добавляем строку в таблицу
         }
@@ -48,7 +52,7 @@ function fillFilmList() {       // Функция для заполнения т
 
 function deleteFilm(id, title) {        // Функция для удаления фильма
     if(! confirm(`Вы точно хотите удалить фильм "${title}"?`)) {        // Показываем диалог подтверждения удаления
-        return;
+        return;     // Если пользователь отменил, выходим из функции
     }
 
     fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})     // Отправляем DELETE-запрос на сервер

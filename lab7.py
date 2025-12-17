@@ -106,7 +106,7 @@ def main(): # При загрузке страницы проверяем и и�
 
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
-def get_films():
+def get_films():    # Возвращаем спилок фильмов 
     conn, cur = db_connect()
     
     try:
@@ -129,7 +129,7 @@ def get_films():
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
-def get_film(id):
+def get_film(id):   # Возвращает информацию о конкретном фильме по его ID.
     conn, cur = db_connect()
     
     try:
@@ -155,7 +155,7 @@ def get_film(id):
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
-def del_film(id):
+def del_film(id):    # Удаляет фильм по указанному ID.
     conn, cur = db_connect()
     
     try:
@@ -265,7 +265,7 @@ def put_film(id):   # обновление существующего фильм
 
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
-def add_film():
+def add_film():     # Создает новый фильм в базе данных
     conn, cur = db_connect()
     
     try:
