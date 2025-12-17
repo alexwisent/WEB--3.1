@@ -64,15 +64,15 @@ def api():
 
     if method == 'booking':     # Бронирование кабинета
         office_number = data['params']      # Номер офиса для бронирования
-        query = "SELECT tenant FROM offices WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")
+        query = "SELECT tenant FROM offices WHERE number=" + ("%s" if current_app.config['DB_TYPE']=='postgres' else "?")   # Проверяем существование офиса
         cur.execute(query, (office_number,))
         office = cur.fetchone()
 
-        if not office:
+        if not office:  
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": -32000, "message": "Office not found"}, "id": id}
 
-        if office['tenant']:
+        if office['tenant']:    # Проверяем, не занят ли уже офис
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": 2, "message": "Already booked"}, "id": id}
 
@@ -92,11 +92,11 @@ def api():
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": -32000, "message": "Office not found"}, "id": id}
 
-        if not office['tenant']:
+        if not office['tenant']:    # Проверяем, арендован ли офис
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": 3, "message": "Офис не арендован"}, "id": id}
 
-        if office['tenant'] != login:
+        if office['tenant'] != login:   # Проверяем, может ли пользователь снять аренду (только свою)
             db_close(conn, cur)
             return {"jsonrpc": "2.0", "error": {"code": 4, "message": "Вы можете снять только свою аренду"}, "id": id}
 
