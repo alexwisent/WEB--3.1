@@ -44,14 +44,39 @@ def register():
     return redirect('/lab8/')
 
 
-@lab8.route('/lab8/login')
+@lab8.route('/lab8/login/', methods=['GET', 'POST'])
 def login():
-    return "Страница входа (будет реализована позже)"
+    if request.method == 'GET':
+        return render_template('lab8/login.html')
+    
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
+    # remember_me = request.form.get('remember') == 'on'
+    
+    if not login_form or login_form.strip() == '':
+        return render_template('lab8/login.html',
+                            error='Логин не может быть пустым')
+    
+    if not password_form or password_form.strip() == '':
+        return render_template('lab8/login.html',
+                            error='Пароль не может быть пустым')
+    
+    user = users.query.filter_by(login=login_form).first()
+
+    if user:
+        if check_password_hash(user.password, password_form):
+            login_user(user, remember=False)    # означает, что авторизацию надо хранить лишь пока открыт браузер
+            session['login'] = login_form
+            return redirect('/lab8/')
+
+    return render_template('lab8/login.html',
+                        error='Ошибка входа: логин и/или пароль неверны')
 
 
-@lab8.route('/lab8/articles')
-def articles():
-    return "Список статей (будет реализован позже)"
+@lab8.route('/lab8/articles/')
+@login_required
+def article_list():
+    return "Список статей"
 
 
 @lab8.route('/lab8/create')
