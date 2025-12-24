@@ -1,9 +1,8 @@
-from flask import Blueprint, render_template, request, abort, jsonify, current_app, session
-from datetime import datetime
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import sqlite3
-from os import path
+from flask import Blueprint, render_template, request, redirect, session, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from db import db
+from db.models import users, articles
 
 lab8 = Blueprint('lab8', __name__)
 
