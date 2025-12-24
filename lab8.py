@@ -8,11 +8,14 @@ lab8 = Blueprint('lab8', __name__)
 
 @lab8.route('/lab8/')
 def lab():
-    login = session.get('login', 'Anonymous')
+    if current_user.is_authenticated:   # Используем current_user из Flask-Login
+        login = current_user.login
+    else:
+        login = 'Anonymous'
     return render_template('lab8/lab8.html', login=login)
 
 
-@lab8.route('/lab8/register/', methods=['GET', 'POST'])
+@lab8.route('/lab8/register/', methods=['GET', 'POST'])     # регистрация
 def register():
     if request.method == 'GET':
         return render_template('lab8/register.html')
@@ -38,13 +41,13 @@ def register():
     db.session.add(new_user)
     db.session.commit()
     
-    # login_user(new_user, remember=False)
+    login_user(new_user, remember=False)
     # session['login'] = login_form
     
     return redirect('/lab8/')
 
 
-@lab8.route('/lab8/login/', methods=['GET', 'POST'])
+@lab8.route('/lab8/login/', methods=['GET', 'POST'])    # вход 
 def login():
     if request.method == 'GET':
         return render_template('lab8/login.html')
@@ -66,17 +69,25 @@ def login():
     if user:
         if check_password_hash(user.password, password_form):
             login_user(user, remember=False)    # означает, что авторизацию надо хранить лишь пока открыт браузер
-            session['login'] = login_form
             return redirect('/lab8/')
 
     return render_template('lab8/login.html',
                         error='Ошибка входа: логин и/или пароль неверны')
 
 
-@lab8.route('/lab8/articles/')
+@lab8.route('/lab8/articles/')  # список статей
 @login_required
 def article_list():
     return "Список статей"
+
+
+
+@lab8.route('/lab8/logout/')    # Выход из системы
+@login_required
+def logout():
+    logout_user()
+    # session.clear()
+    return redirect('/lab8/')
 
 
 @lab8.route('/lab8/create')
