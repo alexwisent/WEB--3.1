@@ -176,17 +176,17 @@ def public_articles():
     )
 
 
-@lab8.route('/lab8/articles/search/', methods=['GET'])      # поиск по своим статьям (для авторизованных)
+@lab8.route('/lab8/articles/search/', methods=['GET'])      # Поиск по своим статьям (авторизованный пользователь)
 @login_required
 def search_articles():
-    query = request.args.get('q', '').strip()  # получаем строку поиска из GET параметра
+    query = request.args.get('q', '').strip()
     if query:
-        # поиск по заголовку и тексту своих статей (регистронезависимо)
+        q_lower = query.lower()
         user_articles = articles.query.filter(
             articles.login_id == current_user.id,
             or_(
-                func.lower(articles.title).like(f"%{query.lower()}%"),
-                func.lower(articles.article_text).like(f"%{query.lower()}%")
+                func.lower(articles.title).like(f"%{q_lower}%"),
+                func.lower(articles.article_text).like(f"%{q_lower}%")
             )
         ).all()
     else:
@@ -195,16 +195,17 @@ def search_articles():
     return render_template('lab8/articles.html', articles=user_articles, search_query=query)
 
 
-@lab8.route('/lab8/public/search/', methods=['GET'])        # поиск по публичным статьям (для всех)
+
+@lab8.route('/lab8/public/search/', methods=['GET'])        # Поиск по публичным статьям (для всех)
 def search_public_articles():
     query = request.args.get('q', '').strip()
     if query:
-        # поиск по публичным статьям (регистронезависимо)
+        q_lower = query.lower()
         public_articles = articles.query.filter(
             articles.is_public == True,
             or_(
-                func.lower(articles.title).like(f"%{query.lower()}%"),
-                func.lower(articles.article_text).like(f"%{query.lower()}%")
+                func.lower(articles.title).like(f"%{q_lower}%"),
+                func.lower(articles.article_text).like(f"%{q_lower}%")
             )
         ).join(users).all()
     else:
