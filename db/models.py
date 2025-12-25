@@ -27,3 +27,21 @@ class gifts(db.Model):
     opened_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     pos_x = db.Column(db.Integer, default=0)  # Позиция X на странице
     pos_y = db.Column(db.Integer, default=0)  # Позиция Y на странице
+
+class users_rgz(db.Model, UserMixin):
+    __tablename__ = 'users_rgz'     # явное указание имени на всякий случай
+
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(30), nullable=False, unique=True)
+    password = db.Column(db.String(162), nullable=False)
+
+class medicines(db.Model):
+    __tablename__ = 'medicines'     # явное указание имени на всякий случай 
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(100), nullable=False)              # торговое название
+    international_name = db.Column(db.String(100), nullable=False)  # МНН
+    prescription_only = db.Column(db.Boolean, nullable=False)     # только по рецепту
+    price = db.Column(db.Numeric(10, 2), nullable=False)          # цена
+    quantity = db.Column(db.Integer, nullable=False)              # количество
