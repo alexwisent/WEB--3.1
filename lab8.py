@@ -104,6 +104,7 @@ def create():
 
     title = request.form.get('title')
     text = request.form.get('article_text')
+    is_public = request.form.get('is_public') == 'on'
 
     if not title or not text:
         return render_template(
@@ -114,13 +115,15 @@ def create():
     new_article = articles(
         login_id=current_user.id,
         title=title,
-        article_text=text
+        article_text=text,
+        is_public=is_public
     )
 
     db.session.add(new_article)
     db.session.commit()
 
     return redirect('/lab8/articles/')
+
 
 
 @lab8.route('/lab8/edit/<int:article_id>/', methods=['GET', 'POST'])    # Редактирование статьи
@@ -136,9 +139,11 @@ def edit(article_id):
 
     article.title = request.form.get('title')
     article.article_text = request.form.get('article_text')
+    article.is_public = request.form.get('is_public') == 'on'
 
     db.session.commit()
     return redirect('/lab8/articles/')
+
 
 
 @lab8.route('/lab8/delete/<int:article_id>/')   # Удаление статьи
@@ -153,5 +158,20 @@ def delete(article_id):
     db.session.commit()
 
     return redirect('/lab8/articles/')
+
+
+@lab8.route('/lab8/public/')    # Публичные статьи
+def public_articles():
+    public_articles = (
+        articles.query
+        .filter_by(is_public=True)
+        .join(users)
+        .all()
+    )
+
+    return render_template(
+        'lab8/public.html',
+        articles=public_articles
+    )
 
 

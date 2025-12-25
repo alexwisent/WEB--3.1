@@ -48,6 +48,19 @@
         button:hover {
             background: #2980b9;
         }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
     </style>
 
     <h1>Редактирование статьи</h1>
@@ -58,6 +71,12 @@
 
         <label>Текст статьи</label>
         <textarea name="article_text" rows="8">{{ article.article_text }}</textarea>
+
+        <label class="checkbox-label">
+            <input type="checkbox" name="is_public"
+                {% if article.is_public %}checked{% endif %}>
+            Публичная статья
+        </label>
 
         <button type="submit">Сохранить изменения</button>
     </form>

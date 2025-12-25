@@ -53,6 +53,16 @@
         .create-btn:hover {
             background: #2980b9;
         }
+
+        .public-badge {
+            background: #27ae60;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
     </style>
 
     <h1>Мои статьи</h1>
@@ -62,7 +72,13 @@
 
         {% for article in articles %}
             <div class="article">
-                <h3>{{ article.title }}</h3>
+                <h3>
+                    {{ article.title }}
+                    {% if article.is_public %}
+                        <span class="public-badge">Публичная</span>
+                    {% endif %}
+                </h3>
+
                 <p>{{ article.article_text }}</p>
 
                 <div class="actions">

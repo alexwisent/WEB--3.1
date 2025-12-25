@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block lab %}Публичные статьи{% endblock %}
+
+{% block main %}
+    <style>
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .article {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .author {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <h1>Публичные статьи</h1>
+
+    <div class="container">
+        {% for article in articles %}
+            <div class="article">
+                <h3>{{ article.title }}</h3>
+                <div class="author">
+                    Автор: {{ article.users.login }}
+                </div>
+                <p>{{ article.article_text }}</p>
+            </div>
+        {% else %}
+            <p>Публичных статей пока нет.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

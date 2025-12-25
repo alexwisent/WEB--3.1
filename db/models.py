@@ -16,3 +16,5 @@ class articles(db.Model):
     is_favorite = db.Column(db.Boolean, default=False)
     is_public = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    users = db.relationship('users', backref='articles')
