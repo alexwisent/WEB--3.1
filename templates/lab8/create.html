@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block lab %}Создание статьи{% endblock %}
+
+{% block main %}
+    <h1>Новая статья</h1>
+
+    {% if error %}
+        <div style="color:red">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>Заголовок</label><br>
+            <input type="text" name="title">
+        </div>
+
+        <div>
+            <label>Текст статьи</label><br>
+            <textarea name="article_text" rows="10" cols="50"></textarea>
+        </div>
+
+        <button type="submit">Создать</button>
+    </form>
+{% endblock %}

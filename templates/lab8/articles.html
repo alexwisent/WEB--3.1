@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block lab %}Мои статьи{% endblock %}
+
+{% block main %}
+    <h1>Мои статьи</h1>
+
+    <a href="/lab8/create/">➕ Создать статью</a>
+    <hr>
+
+    {% for article in articles %}
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.article_text[:200] }}...</p>
+
+        <a href="/lab8/edit/{{ article.id }}">✏ Редактировать</a>
+        |
+        <a href="/lab8/delete/{{ article.id }}">🗑 Удалить</a>
+        <hr>
+    {% else %}
+        <p>Статей пока нет</p>
+    {% endfor %}
+{% endblock %}

@@ -74,10 +74,17 @@ def login():
                         error='Ошибка входа: логин и/или пароль неверны')
 
 
-@lab8.route('/lab8/articles/')  # список статей
+@lab8.route('/lab8/articles/')  # Просмотр и редактирование статей
 @login_required
 def article_list():
-    return "Список статей"
+    user_articles = articles.query.filter_by(
+        login_id=current_user.id
+    ).all()
+
+    return render_template(
+        'lab8/articles.html',
+        articles=user_articles
+    )
 
 
 
@@ -89,10 +96,62 @@ def logout():
     return redirect('/lab8/')
 
 
-@lab8.route('/lab8/create')
+@lab8.route('/lab8/create/', methods=['GET', 'POST'])       # Создание статьи
+@login_required
 def create():
-    return "Создание статьи (будет реализовано позже)"
+    if request.method == 'GET':
+        return render_template('lab8/create.html')
+
+    title = request.form.get('title')
+    text = request.form.get('article_text')
+
+    if not title or not text:
+        return render_template(
+            'lab8/create.html',
+            error='Заголовок и текст статьи обязательны'
+        )
+
+    new_article = articles(
+        login_id=current_user.id,
+        title=title,
+        article_text=text
+    )
+
+    db.session.add(new_article)
+    db.session.commit()
+
+    return redirect('/lab8/articles/')
 
 
+@lab8.route('/lab8/edit/<int:article_id>/', methods=['GET', 'POST'])    # Редактирование статьи
+@login_required
+def edit(article_id):
+    article = articles.query.filter_by(
+        id=article_id,
+        login_id=current_user.id
+    ).first_or_404()
+
+    if request.method == 'GET':
+        return render_template('lab8/edit.html', article=article)
+
+    article.title = request.form.get('title')
+    article.article_text = request.form.get('article_text')
+
+    db.session.commit()
+    return redirect('/lab8/articles/')
+
+
+@lab8.route('/lab8/delete/<int:article_id>/')   # Удаление статьи
+@login_required
+def delete(article_id):
+    article = articles.query.filter_by(
+        id=article_id,
+        login_id=current_user.id
+    ).first_or_404()
+
+    db.session.delete(article)
+    db.session.commit()
+
+    return redirect('/lab8/articles/')
 
 
