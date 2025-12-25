@@ -2,8 +2,161 @@
 
 {% block lab %}Лабораторная работа 9{% endblock %}
 
-{% block script %}{% endblock %}
-
 {% block main %}
-    <h1>Поздравления</h1>
+<style>
+:root {
+    --bg-color: #0a3d62;
+    --container-bg: rgba(255, 255, 255, 0.1);
+    --gold-color: #fad390;
+    --red-color: #e55039;
+    --dark-red: #eb2f06;
+    --green-color: #78e08f;
+    --border-radius: 20px;
+}
+
+body {
+    background: linear-gradient(135deg, #0a3d62, #1e3799);
+    color: white;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+h1 { color: var(--gold-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-size: 2.5em; margin-bottom: 20px; }
+
+.counter-container { background-color: var(--container-bg); border-radius: var(--border-radius); padding: 20px; margin: 20px auto; width: 80%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid var(--gold-color); }
+.counter { font-size: 1.2em; margin: 10px 0; }
+#remaining { font-weight: bold; color: var(--gold-color); font-size: 1.5em; }
+.total-boxes { color: var(--green-color); font-size: 1.1em; margin-top: 10px; }
+
+.gifts-container { background-color: var(--container-bg); border-radius: var(--border-radius); padding: 40px 20px; margin: 30px auto; width: 90%; min-height: 500px; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.4); border: 3px solid var(--gold-color); }
+
+.gift-box, .gift-opened { transition: all 0.3s ease; position: absolute; width: 80px; height: 80px; }
+.gift-box {
+    cursor: pointer;
+    background-color: gray;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+.gift-box:hover { transform: scale(1.15) rotate(5deg); filter: drop-shadow(0 0 10px var(--gold-color)); }
+.gift-opened { width: 80px; height: 80px; animation: appear 0.5s ease-out; }
+@keyframes appear { 0% { transform: scale(0); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+.magic-button-container { margin: 30px 0; }
+#magic-btn { background: linear-gradient(to bottom, var(--red-color), var(--dark-red)); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-weight: bold; }
+#magic-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.4); background: linear-gradient(to bottom, var(--dark-red), #c23616); }
+
+.info-box { background-color: var(--container-bg); border-radius: var(--border-radius); padding: 20px; margin: 20px auto; width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 2px solid var(--green-color); }
+.info-box p { margin: 10px 0; font-size: 1.1em; line-height: 1.5; }
+
+.snowflake { position: absolute; color: white; font-size: 1.5em; user-select: none; z-index: -1; }
+
+@media (max-width: 768px) {
+    .gift-box, .gift-opened { width: 60px; height: 60px; font-size: 20px; }
+    .gifts-container { padding: 20px 10px; min-height: 400px; }
+    h1 { font-size: 2em; }
+}
+</style>
+
+<div class="main-container">
+    <h1>🎄 Новогодние Подарки! 🎁</h1>
+    
+    <div class="counter-container">
+        <div class="counter">Можно открыть ещё: <span id="remaining">{{ remaining }}</span> из {{ max_opened }}</div>
+        <div class="total-boxes">Всего коробок с подарками: {{ boxes_count }}</div>
+    </div>
+    
+    <div class="gifts-container" id="gift-container">
+        {% for box in boxes %}
+            {% if current_user.is_authenticated %}
+                {% set is_opened = box.opened_by is not none and box.opened_by == current_user.id %}
+            {% else %}
+                {% set is_opened = session.get('guest_opened', []) and box.id in session.get('guest_opened', []) %}
+            {% endif %}
+            
+            {% if is_opened %}
+                <img src="{{ url_for('static', filename=box.image) }}" class="gift-opened" style="left:{{ box.pos_x }}px; top:{{ box.pos_y }}px;" alt="Открытый подарок">
+            {% else %}
+                <div class="gift-box" data-box-id="{{ box.id }}" style="left:{{ box.pos_x }}px; top:{{ box.pos_y }}px;">🔒</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    {% if login %}
+    <div class="magic-button-container">
+        <button id="magic-btn">🎅 Дед Мороз! (Сбросить мои коробки)</button>
+    </div>
+    {% endif %}
+    
+    <div class="info-box">
+        <p>🎁 Откройте до {{ max_opened }} коробок с подарками!</p>
+        <p>✨ Каждая коробка содержит уникальный подарок и поздравление</p>
+        <p>🎅 Авторизованные пользователи могут сбросить свои открытия</p>
+        <p>❄️ Всего на странице {{ boxes_count }} подарков!</p>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.gift-box').forEach(box => {
+    box.addEventListener('click', () => {
+        let boxId = box.dataset.boxId;
+        fetch('/lab9/open/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({box_id: boxId})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) { alert(data.error); }
+            else {
+                // создаём <img> с подарком и заменяем div
+                const giftImg = document.createElement('img');
+                giftImg.src = '/static/' + data.image;
+                giftImg.className = 'gift-opened';
+                giftImg.style.left = box.style.left;
+                giftImg.style.top = box.style.top;
+                giftImg.alt = 'Открытый подарок';
+                box.replaceWith(giftImg);
+
+                setTimeout(() => { alert(data.message); }, 300);
+                document.getElementById('remaining').textContent = data.remaining;
+                if (data.remaining <= 0) setTimeout(() => { alert('🎉 Поздравляем! Вы открыли все доступные коробки!'); }, 500);
+            }
+        })
+        .catch(err => { console.error(err); alert('Произошла ошибка при открытии коробки'); });
+    });
+});
+
+{% if login %}
+document.getElementById('magic-btn').addEventListener('click', () => {
+    if (confirm('🎅 Дед Мороз вернёт все ваши коробки! Вы уверены?')) {
+        fetch('/lab9/magic/', {method:'POST'})
+        .then(res => res.json())
+        .then(data => { if(data.status=='ok') location.reload(); })
+        .catch(err => { console.error(err); alert('Произошла ошибка'); });
+    }
+});
+{% endif %}
+
+function createSnowflakes() {
+    const container = document.querySelector('.main-container');
+    for (let i = 0; i < 15; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.textContent = '❄';
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        snowflake.style.top = Math.random() * 100 + 'vh';
+        snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+        container.appendChild(snowflake);
+    }
+}
+window.addEventListener('load', createSnowflakes);
+</script>
 {% endblock %}

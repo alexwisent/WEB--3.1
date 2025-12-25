@@ -18,3 +18,12 @@ class articles(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     users = db.relationship('users', backref='articles')
+
+class gifts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    box_number = db.Column(db.Integer, unique=True, nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.String(255), nullable=False)
+    opened_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    pos_x = db.Column(db.Integer, default=0)  # Позиция X на странице
+    pos_y = db.Column(db.Integer, default=0)  # Позиция Y на странице
