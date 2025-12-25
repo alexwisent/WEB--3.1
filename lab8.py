@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import users, articles
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -176,17 +176,17 @@ def public_articles():
     )
 
 
-@lab8.route('/lab8/articles/search/', methods=['GET', 'POST'])      # поиск по своим статьям (для авторизованных)
+@lab8.route('/lab8/articles/search/', methods=['GET'])      # поиск по своим статьям (для авторизованных)
 @login_required
 def search_articles():
-    query = request.args.get('q', '')  # получаем строку поиска из GET параметра
+    query = request.args.get('q', '').strip()  # получаем строку поиска из GET параметра
     if query:
         # поиск по заголовку и тексту своих статей (регистронезависимо)
         user_articles = articles.query.filter(
             articles.login_id == current_user.id,
             or_(
-                articles.title.ilike(f'%{query}%'),         # .ilike() — это регистронезависимый поиск в SQLAlchemy.
-                articles.article_text.ilike(f'%{query}%')
+                func.lower(articles.title).like(f"%{query.lower()}%"),
+                func.lower(articles.article_text).like(f"%{query.lower()}%")
             )
         ).all()
     else:
@@ -195,16 +195,16 @@ def search_articles():
     return render_template('lab8/articles.html', articles=user_articles, search_query=query)
 
 
-@lab8.route('/lab8/public/search/', methods=['GET', 'POST'])    # поиск по публичным статьям (для всех)
+@lab8.route('/lab8/public/search/', methods=['GET'])        # поиск по публичным статьям (для всех)
 def search_public_articles():
-    query = request.args.get('q', '')
+    query = request.args.get('q', '').strip()
     if query:
-        # поиск по публичным статьям
+        # поиск по публичным статьям (регистронезависимо)
         public_articles = articles.query.filter(
             articles.is_public == True,
             or_(
-                articles.title.ilike(f'%{query}%'),
-                articles.article_text.ilike(f'%{query}%')
+                func.lower(articles.title).like(f"%{query.lower()}%"),
+                func.lower(articles.article_text).like(f"%{query.lower()}%")
             )
         ).join(users).all()
     else:
