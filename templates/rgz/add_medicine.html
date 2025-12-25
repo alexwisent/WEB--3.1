@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block lab %}Добавить препарат{% endblock %}
+
+{% block main %}
+    <style>
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        form div { margin-bottom: 15px; }
+        form label { display: block; margin-bottom: 5px; color: #2c3e50; font-weight: 500; }
+        form input[type="text"], form input[type="number"] {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;
+        }
+        form input[type="checkbox"] { margin-top: 10px; }
+        button {
+            width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px;
+            font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background: #2980b9; }
+        .error { background: #e74c3c; color: white; padding: 12px; border-radius: 5px; margin: 20px auto; max-width: 500px; text-align: center; }
+    </style>
+
+    <h1>Добавить новый препарат</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form action="/rgz/add_medicine/" method="post">
+        <div>
+            <label>Название:</label>
+            <input type="text" name="name">
+        </div>
+        <div>
+            <label>МНН (международное название):</label>
+            <input type="text" name="international_name">
+        </div>
+        <div>
+            <label><input type="checkbox" name="prescription_only"> Только по рецепту</label>
+        </div>
+        <div>
+            <label>Цена:</label>
+            <input type="number" name="price" step="0.01" min="0" oninput="this.value = this.value.replace(/[^0-9.]*/g,'');">
+        </div>
+        <div>
+            <label>Количество:</label>
+            <input type="number" name="quantity" step="1" min="0" oninput="this.value = this.value.replace(/[^0-9]*/g,'');">
+        </div>
+        <button type="submit">Добавить препарат</button>
+    </form>
+{% endblock %}

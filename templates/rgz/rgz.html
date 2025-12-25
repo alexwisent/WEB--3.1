@@ -52,11 +52,14 @@
 </div>
 
 <div class="nav-panel">
-    <a href="/rgz/search" class="nav-btn">Поиск препаратов</a>
-    <a href="/rgz/add" class="nav-btn">Добавить препарат</a>
+    <a href="/rgz/medicines" class="nav-btn">Поиск препаратов</a>
+    <a href="/rgz/add_medicine" class="nav-btn">Добавить препарат</a>
     <a href="/rgz/login" class="nav-btn">Вход</a>
     <a href="/rgz/register" class="nav-btn">Регистрация</a>
     <a href="/rgz/logout" class="nav-btn">Выход</a>
+    {% if login != 'Гость' %}
+        <a href="/rgz/delete_account/" class="nav-btn" style="background:#e74c3c; color:white;">Удалить аккаунт</a>
+    {% endif %}
 </div>
 
 <div class="user-info">

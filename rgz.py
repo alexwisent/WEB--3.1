@@ -2,7 +2,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import Blueprint, render_template, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
-from db.models import users_rgz, medicines
+from db.models import users, medicines
 
 rgz = Blueprint('rgz', __name__)
 
@@ -30,12 +30,12 @@ def register():
         return render_template('rgz/register.html', error='Пароль не может быть пустым')
     
     # Проверка на уникальность
-    if users_rgz.query.filter_by(login=login_form).first():
+    if users.query.filter_by(login=login_form).first():
         return render_template('rgz/register.html', error='Пользователь с таким логином уже существует')
 
     # Хеширование пароля
     password_hash = generate_password_hash(password_form)
-    new_user = users_rgz(login=login_form, password=password_hash)
+    new_user = users(login=login_form, password=password_hash)
 
     db.session.add(new_user)
     db.session.commit()
@@ -60,7 +60,7 @@ def login():
     if not password_form:
         return render_template('rgz/login.html', error='Пароль не может быть пустым')
 
-    user = users_rgz.query.filter_by(login=login_form).first()
+    user = users.query.filter_by(login=login_form).first()
 
     if user and check_password_hash(user.password, password_form):
         login_user(user, remember=False)
@@ -69,14 +69,13 @@ def login():
     return render_template('rgz/login.html', error='Неверный логин или пароль')
 
 
-@rgz.route('/rgz/logout/')      # Выход
+@rgz.route('/rgz/logout/')  # Выход
 def logout():
     logout_user()
     return redirect('/rgz/')
 
 
-@rgz.route('/rgz/medicines/')
-@login_required
+@rgz.route('/rgz/medicines/')   # Список препаратов
 def medicine_list():
     # Получаем параметр страницы, по умолчанию 1
     page = request.args.get('page', 1, type=int)
@@ -87,3 +86,118 @@ def medicine_list():
     meds = pagination.items
 
     return render_template('rgz/medicines.html', medicines=meds, pagination=pagination)
+
+
+@rgz.route('/rgz/add_medicine/', methods=['GET', 'POST'])   # Добавление препаратов
+@login_required
+def add_medicine():
+    # Разрешено только администратору
+    if current_user.login != 'admin':
+        return "У вас нет прав для добавления препаратов", 403
+
+    if request.method == 'GET':
+        return render_template('rgz/add_medicine.html')
+
+    # Получаем данные из формы
+    name = request.form.get('name', '').strip()
+    international_name = request.form.get('international_name', '').strip()
+    prescription_only = request.form.get('prescription_only') == 'on'
+    price = request.form.get('price', '').strip()
+    quantity = request.form.get('quantity', '').strip()
+
+    # Валидация
+    if not name or not international_name or not price or not quantity:
+        return render_template('rgz/add_medicine.html', error='Все поля обязательны')
+
+    try:
+        price = float(price)
+        quantity = int(quantity)
+    except ValueError:
+        return render_template('rgz/add_medicine.html', error='Цена и количество должны быть числами')
+
+    if price <= 0:
+        return render_template('rgz/add_medicine.html', error='Цена должна быть больше 0')
+    if quantity < 0:
+        return render_template('rgz/add_medicine.html', error='Количество не может быть отрицательным')
+
+    # Создаём новый препарат
+    new_med = medicines(
+        name=name,
+        international_name=international_name,
+        prescription_only=prescription_only,
+        price=price,
+        quantity=quantity
+    )
+
+    db.session.add(new_med)
+    db.session.commit()
+
+    return redirect('/rgz/medicines/')
+
+
+@rgz.route('/rgz/edit_medicine/<int:med_id>/', methods=['GET', 'POST'])     # Редактирование препаратов
+@login_required
+def edit_medicine(med_id):
+    # Только администратор
+    if current_user.login != 'admin':
+        return "У вас нет прав для редактирования препаратов", 403
+
+    # Получаем препарат по id
+    med = medicines.query.get_or_404(med_id)
+
+    if request.method == 'GET':
+        # Отправляем текущие данные в форму
+        return render_template('rgz/edit_medicine.html', med=med)
+
+    # Получаем данные из формы
+    name = request.form.get('name', '').strip()
+    international_name = request.form.get('international_name', '').strip()
+    prescription_only = request.form.get('prescription_only') == 'on'
+    price = request.form.get('price', '').strip()
+    quantity = request.form.get('quantity', '').strip()
+
+    # Валидация
+    if not name or not international_name or not price or not quantity:
+        return render_template('rgz/edit_medicine.html', med=med, error='Все поля обязательны')
+
+    try:
+        price = float(price)
+        quantity = int(quantity)
+    except ValueError:
+        return render_template('rgz/edit_medicine.html', med=med, error='Цена и количество должны быть числами')
+
+    if price <= 0:
+        return render_template('rgz/edit_medicine.html', med=med, error='Цена должна быть больше 0')
+    if quantity < 0:
+        return render_template('rgz/edit_medicine.html', med=med, error='Количество не может быть отрицательным')
+
+    # Обновляем данные
+    med.name = name
+    med.international_name = international_name
+    med.prescription_only = prescription_only
+    med.price = price
+    med.quantity = quantity
+
+    db.session.commit()
+
+    return redirect('/rgz/medicines/')
+
+
+@rgz.route('/rgz/delete_account/', methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    if request.method == 'GET':
+        # Показываем страницу подтверждения удаления
+        return render_template('rgz/delete_account.html')
+
+    # POST — подтверждение удаления
+    user = current_user
+
+    # Удаляем пользователя из базы
+    db.session.delete(user)
+    db.session.commit()
+
+    # Выход из системы
+    logout_user()
+
+    return redirect('/rgz/')

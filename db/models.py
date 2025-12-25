@@ -28,15 +28,8 @@ class gifts(db.Model):
     pos_x = db.Column(db.Integer, default=0)  # Позиция X на странице
     pos_y = db.Column(db.Integer, default=0)  # Позиция Y на странице
 
-class users_rgz(db.Model, UserMixin):
-    __tablename__ = 'users_rgz'     # явное указание имени на всякий случай
-
-    id = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String(30), nullable=False, unique=True)
-    password = db.Column(db.String(162), nullable=False)
-
 class medicines(db.Model):
-    __tablename__ = 'medicines'     # явное указание имени на всякий случай 
+    __tablename__ = 'medicines'     # явное указание имени на всякий случай
 
     id = db.Column(db.Integer, primary_key=True)
 

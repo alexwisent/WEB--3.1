@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block lab %}Удаление аккаунта{% endblock %}
+
+{% block main %}
+    <h1>Удаление аккаунта</h1>
+    <p style="text-align:center; color:red;">Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.</p>
+    <form action="/rgz/delete_account/" method="post" style="max-width:400px; margin:0 auto;">
+        <button type="submit" style="width:100%; padding:10px; background:#e74c3c; color:white; border:none; border-radius:5px; cursor:pointer;">
+            Удалить аккаунт
+        </button>
+    </form>
+{% endblock %}

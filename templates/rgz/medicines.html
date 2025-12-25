@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block lab %}Список препаратов{% endblock %}
+
+{% block main %}
+    <style>
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .medicine-list { max-width: 800px; margin: 0 auto; }
+        .medicine-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+        }
+        .medicine-item span { font-weight: bold; }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            text-decoration: none;
+            color: #3498db;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .pagination a:hover { background: #3498db; color: white; }
+        .pagination .disabled { color: #aaa; border-color: #aaa; pointer-events: none; }
+
+        .add-btn {
+            display: block;
+            max-width: 200px;
+            margin: 0 auto 20px;
+            padding: 10px 15px;
+            text-align: center;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .add-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+
+    <h1>Список препаратов</h1>
+
+    {% if current_user.is_authenticated and current_user.login == 'admin' %}
+        <a href="{{ url_for('rgz.add_medicine') }}" class="add-btn">Добавить препарат</a>
+    {% endif %}
+
+    <div class="medicine-list">
+        {% for med in medicines %}
+            <div class="medicine-item">
+                <div><span>Название:</span> {{ med.name }}</div>
+                <div><span>МНН:</span> {{ med.international_name }}</div>
+                <div><span>По рецепту:</span> {{ 'Да' if med.prescription_only else 'Нет' }}</div>
+                <div><span>Цена:</span> {{ med.price }}</div>
+                <div><span>Количество:</span> {{ med.quantity if med.quantity > 0 else 'Отсутствует' }}</div>
+
+                {% if current_user.is_authenticated and current_user.login == 'admin' %}
+                    <div style="margin-top:10px;">
+                        <a href="/rgz/edit_medicine/{{ med.id }}/">Редактировать</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('rgz.medicine_list', page=pagination.prev_num) }}">« Предыдущие</a>
+        {% else %}
+            <span class="disabled">« Предыдущие</span>
+        {% endif %}
+
+        {% if pagination.has_next %}
+            <a href="{{ url_for('rgz.medicine_list', page=pagination.next_num) }}">Следующие »</a>
+        {% else %}
+            <span class="disabled">Следующие »</span>
+        {% endif %}
+    </div>
+{% endblock %}
