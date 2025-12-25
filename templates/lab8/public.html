@@ -30,11 +30,47 @@
             color: #7f8c8d;
             margin-bottom: 10px;
         }
+
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .search-box input[type="text"] {
+            width: 60%;
+            max-width: 400px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box button {
+            padding: 8px 16px;
+            margin-left: 5px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #2980b9;
+        }
     </style>
 
     <h1>Публичные статьи</h1>
 
     <div class="container">
+        <div class="search-box">
+            <form method="get" action="/lab8/public/search/">
+                <input type="text" name="q" placeholder="Поиск по публичным статьям..." value="{{ search_query or '' }}">
+                <button type="submit">Найти</button>
+            </form>
+        </div>
+
         {% for article in articles %}
             <div class="article">
                 <h3>{{ article.title }}</h3>

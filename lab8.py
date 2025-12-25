@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import users, articles
+from sqlalchemy import or_
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -175,3 +176,38 @@ def public_articles():
     )
 
 
+@lab8.route('/lab8/articles/search/', methods=['GET', 'POST'])      # поиск по своим статьям (для авторизованных)
+@login_required
+def search_articles():
+    query = request.args.get('q', '')  # получаем строку поиска из GET параметра
+    if query:
+        # поиск по заголовку и тексту своих статей (регистронезависимо)
+        user_articles = articles.query.filter(
+            articles.login_id == current_user.id,
+            or_(
+                articles.title.ilike(f'%{query}%'),         # .ilike() — это регистронезависимый поиск в SQLAlchemy.
+                articles.article_text.ilike(f'%{query}%')
+            )
+        ).all()
+    else:
+        user_articles = articles.query.filter_by(login_id=current_user.id).all()
+
+    return render_template('lab8/articles.html', articles=user_articles, search_query=query)
+
+
+@lab8.route('/lab8/public/search/', methods=['GET', 'POST'])    # поиск по публичным статьям (для всех)
+def search_public_articles():
+    query = request.args.get('q', '')
+    if query:
+        # поиск по публичным статьям
+        public_articles = articles.query.filter(
+            articles.is_public == True,
+            or_(
+                articles.title.ilike(f'%{query}%'),
+                articles.article_text.ilike(f'%{query}%')
+            )
+        ).join(users).all()
+    else:
+        public_articles = articles.query.filter_by(is_public=True).join(users).all()
+
+    return render_template('lab8/public.html', articles=public_articles, search_query=query)

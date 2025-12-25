@@ -63,12 +63,48 @@
             margin-left: 10px;
             vertical-align: middle;
         }
+
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .search-box input[type="text"] {
+            width: 60%;
+            max-width: 400px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box button {
+            padding: 8px 16px;
+            margin-left: 5px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #2980b9;
+        }
     </style>
 
     <h1>Мои статьи</h1>
 
     <div class="container">
         <a href="/lab8/create/" class="create-btn">➕ Создать статью</a>
+
+        <div class="search-box">
+            <form method="get" action="/lab8/articles/search/">
+                <input type="text" name="q" placeholder="Поиск по своим статьям..." value="{{ search_query or '' }}">
+                <button type="submit">Найти</button>
+            </form>
+        </div>
 
         {% for article in articles %}
             <div class="article">
