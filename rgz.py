@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import users, medicines
+from sqlalchemy import or_, and_
 
 rgz = Blueprint('rgz', __name__)
 
@@ -77,15 +78,34 @@ def logout():
 
 @rgz.route('/rgz/medicines/')   # Список препаратов
 def medicine_list():
-    # Получаем параметр страницы, по умолчанию 1
-    page = request.args.get('page', 1, type=int)
-    per_page = 10  # количество препаратов на странице
+    # Получаем параметры поиска из query string
+    search_name = request.args.get('name', '').strip()
+    max_price = request.args.get('price', '').strip()
+    prescription_only = request.args.get('prescription_only')
 
-    # Запрос к базе с пагинацией
-    pagination = medicines.query.order_by(medicines.id).paginate(page=page, per_page=per_page)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+
+    query = medicines.query
+
+    if search_name:
+        query = query.filter(medicines.name.ilike(f'%{search_name}%'))
+    
+    if max_price:
+        try:
+            max_price_val = float(max_price)
+            query = query.filter(medicines.price <= max_price_val)
+        except ValueError:
+            pass  # если введено не число, игнорируем
+
+    if prescription_only == 'on':
+        query = query.filter(medicines.prescription_only == True)
+
+    pagination = query.order_by(medicines.id).paginate(page=page, per_page=per_page)
     meds = pagination.items
 
-    return render_template('rgz/medicines.html', medicines=meds, pagination=pagination)
+    return render_template('rgz/medicines.html', medicines=meds, pagination=pagination, search_name=search_name, max_price=max_price, prescription_only=prescription_only)
+
 
 
 @rgz.route('/rgz/add_medicine/', methods=['GET', 'POST'])   # Добавление препаратов
