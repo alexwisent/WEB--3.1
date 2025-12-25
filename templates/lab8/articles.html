@@ -1,22 +1,77 @@
 {% extends "base.html" %}
 
-{% block lab %}Мои статьи{% endblock %}
+{% block lab %}Лабораторная работа 8{% endblock %}
 
 {% block main %}
+    <style>
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .article {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .article h3 {
+            color: #2c3e50;
+        }
+
+        .actions a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .create-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .create-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+
     <h1>Мои статьи</h1>
 
-    <a href="/lab8/create/">➕ Создать статью</a>
-    <hr>
+    <div class="container">
+        <a href="/lab8/create/" class="create-btn">➕ Создать статью</a>
 
-    {% for article in articles %}
-        <h3>{{ article.title }}</h3>
-        <p>{{ article.article_text[:200] }}...</p>
+        {% for article in articles %}
+            <div class="article">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.article_text }}</p>
 
-        <a href="/lab8/edit/{{ article.id }}">✏ Редактировать</a>
-        |
-        <a href="/lab8/delete/{{ article.id }}">🗑 Удалить</a>
-        <hr>
-    {% else %}
-        <p>Статей пока нет</p>
-    {% endfor %}
+                <div class="actions">
+                    <a href="/lab8/edit/{{ article.id }}">Редактировать</a>
+                    <a href="/lab8/delete/{{ article.id }}">Удалить</a>
+                </div>
+            </div>
+        {% else %}
+            <p>Статей пока нет.</p>
+        {% endfor %}
+    </div>
 {% endblock %}
