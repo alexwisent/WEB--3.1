@@ -176,7 +176,12 @@ def public_articles():
     )
 
 
-@lab8.route('/lab8/articles/search/', methods=['GET'])      # Поиск по своим статьям (авторизованный пользователь)
+from sqlalchemy import or_, func
+from flask_login import login_required, current_user
+from flask import render_template
+
+# Поиск по своим статьям (авторизованный пользователь)
+@lab8.route('/lab8/articles/search/', methods=['GET'])
 @login_required
 def search_articles():
     query = request.args.get('q', '').strip()
@@ -195,8 +200,8 @@ def search_articles():
     return render_template('lab8/articles.html', articles=user_articles, search_query=query)
 
 
-
-@lab8.route('/lab8/public/search/', methods=['GET'])        # Поиск по публичным статьям (для всех)
+# Поиск по публичным статьям (для всех)
+@lab8.route('/lab8/public/search/', methods=['GET'])
 def search_public_articles():
     query = request.args.get('q', '').strip()
     if query:
@@ -212,3 +217,4 @@ def search_public_articles():
         public_articles = articles.query.filter_by(is_public=True).join(users).all()
 
     return render_template('lab8/public.html', articles=public_articles, search_query=query)
+
