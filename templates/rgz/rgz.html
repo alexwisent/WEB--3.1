@@ -3,70 +3,70 @@
 {% block lab %}Расчётно-графическое задание{% endblock %}
 
 {% block main %}
-<style>
-    .pharmacy-title {
-        text-align: center;
-        font-size: 2rem;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 30px;
-    }
+    <style>
+        .pharmacy-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
 
-    .nav-panel {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        padding: 20px;
-        background: #f5f5f5;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
+        .nav-panel {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
-    .nav-btn {
-        padding: 10px 20px;
-        border: 1px solid #3498db;
-        border-radius: 5px;
-        text-decoration: none;
-        color: #3498db;
-        background: white;
-        font-weight: 500;
-        transition: 0.2s;
-    }
+        .nav-btn {
+            padding: 10px 20px;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #3498db;
+            background: white;
+            font-weight: 500;
+            transition: 0.2s;
+        }
 
-    .nav-btn:hover {
-        background: #3498db;
-        color: white;
-    }
+        .nav-btn:hover {
+            background: #3498db;
+            color: white;
+        }
 
-    .user-info {
-        text-align: center;
-        margin-top: 10px;
-        font-weight: bold;
-        color: #2c3e50;
-    }
-</style>
+        .user-info {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
 
-<div class="pharmacy-title">
-    Аптека «Здоровье+»
-</div>
+    <div class="pharmacy-title">
+        Аптека «Здоровье+»
+    </div>
 
-<div class="nav-panel">
-    <a href="/rgz/medicines" class="nav-btn">Поиск препаратов</a>
+    <div class="nav-panel">
+        <a href="/rgz/medicines" class="nav-btn">Поиск препаратов</a>
 
-    {% if current_user.is_authenticated and current_user.login == 'admin' %}
-        <a href="/rgz/add_medicine" class="nav-btn">Добавить препарат</a>
-    {% endif %}
-    
-    <a href="/rgz/login" class="nav-btn">Вход</a>
-    <a href="/rgz/register" class="nav-btn">Регистрация</a>
-    <a href="/rgz/logout" class="nav-btn">Выход</a>
-    {% if login != 'Гость' %}
-        <a href="/rgz/delete_account/" class="nav-btn" style="background:#e74c3c; color:white;">Удалить аккаунт</a>
-    {% endif %}
-</div>
+        {% if current_user.is_authenticated and current_user.login == 'admin' %}
+            <a href="/rgz/add_medicine" class="nav-btn">Добавить препарат</a>
+        {% endif %}
+        
+        <a href="/rgz/login" class="nav-btn">Вход</a>
+        <a href="/rgz/register" class="nav-btn">Регистрация</a>
+        <a href="/rgz/logout" class="nav-btn">Выход</a>
+        {% if login != 'Гость' %}
+            <a href="/rgz/delete_account/" class="nav-btn" style="background:#e74c3c; color:white;">Удалить аккаунт</a>
+        {% endif %}
+    </div>
 
-<div class="user-info">
-    Пользователь: {{ login }}
-</div>
+    <div class="user-info">
+        Пользователь: {{ login }}
+    </div>
 {% endblock %}
