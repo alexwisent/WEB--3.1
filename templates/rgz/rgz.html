@@ -53,7 +53,11 @@
 
 <div class="nav-panel">
     <a href="/rgz/medicines" class="nav-btn">Поиск препаратов</a>
-    <a href="/rgz/add_medicine" class="nav-btn">Добавить препарат</a>
+
+    {% if current_user.is_authenticated and current_user.login == 'admin' %}
+        <a href="/rgz/add_medicine" class="nav-btn">Добавить препарат</a>
+    {% endif %}
+    
     <a href="/rgz/login" class="nav-btn">Вход</a>
     <a href="/rgz/register" class="nav-btn">Регистрация</a>
     <a href="/rgz/logout" class="nav-btn">Выход</a>
