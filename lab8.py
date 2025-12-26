@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import users, articles
 from sqlalchemy import or_, func
+from flask import render_template
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -175,10 +176,6 @@ def public_articles():
         articles=public_articles
     )
 
-
-from sqlalchemy import or_, func
-from flask_login import login_required, current_user
-from flask import render_template
 
 # Поиск по своим статьям (авторизованный пользователь)
 @lab8.route('/lab8/articles/search/', methods=['GET'])
