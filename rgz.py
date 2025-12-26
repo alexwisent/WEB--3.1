@@ -18,11 +18,11 @@ def main():
 
 @rgz.route('/rgz/register/', methods=['GET', 'POST'])       # Регистрация
 def register():
-    if request.method == 'GET':
+    if request.method == 'GET':     # Отображение формы регистрации
         return render_template('rgz/register.html')
 
-    login_form = request.form.get('login', '').strip()
-    password_form = request.form.get('password', '').strip()
+    login_form = request.form.get('login', '').strip()      # Получаем логин из формы
+    password_form = request.form.get('password', '').strip()    # Получаем пароль из формы
 
     # Валидация
     if not login_form:
@@ -61,18 +61,18 @@ def login():
     if not password_form:
         return render_template('rgz/login.html', error='Пароль не может быть пустым')
 
-    user = users.query.filter_by(login=login_form).first()
+    user = users.query.filter_by(login=login_form).first()  # Ищем пользователя в БД
 
-    if user and check_password_hash(user.password, password_form):
-        login_user(user, remember=False)
+    if user and check_password_hash(user.password, password_form):  # Проверяем пароль
+        login_user(user, remember=False)    # Авторизуем пользователя
         return redirect('/rgz/')
     
     return render_template('rgz/login.html', error='Неверный логин или пароль')
 
 
 @rgz.route('/rgz/logout/')  # Выход
-def logout():
-    logout_user()
+def logout():   # Выход пользователя
+    logout_user()   # Завершаем сессию
     return redirect('/rgz/')
 
 
@@ -83,15 +83,15 @@ def medicine_list():
     max_price = request.args.get('price', '').strip()
     prescription_only = request.args.get('prescription_only')
 
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1, type=int)    # Текущая страница
     per_page = 10
 
     query = medicines.query
 
-    if search_name:
+    if search_name: # Фильтр по названию
         query = query.filter(medicines.name.ilike(f'%{search_name}%'))
     
-    if max_price:
+    if max_price:   # Фильтр по цене
         try:
             max_price_val = float(max_price)
             query = query.filter(medicines.price <= max_price_val)
@@ -99,10 +99,10 @@ def medicine_list():
             pass  # если введено не число, игнорируем
 
     if prescription_only == 'on':
-        query = query.filter(medicines.prescription_only == True)
+        query = query.filter(medicines.prescription_only == True)   # Только рецептурные
 
-    pagination = query.order_by(medicines.id).paginate(page=page, per_page=per_page)
-    meds = pagination.items
+    pagination = query.order_by(medicines.id).paginate(page=page, per_page=per_page)    # Пагинация
+    meds = pagination.items # Текущая страница препаратов
 
     return render_template('rgz/medicines.html', medicines=meds, pagination=pagination, search_name=search_name, max_price=max_price, prescription_only=prescription_only)
 
