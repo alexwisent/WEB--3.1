@@ -221,3 +221,18 @@ def delete_account():
     logout_user()
 
     return redirect('/rgz/')
+
+
+@rgz.route('/rgz/delete_medicine/<int:med_id>/', methods=['POST'])
+@login_required
+def delete_medicine(med_id):
+    # Только администратор
+    if current_user.login != 'admin':
+        return "У вас нет прав для удаления препаратов", 403
+
+    med = medicines.query.get_or_404(med_id)
+
+    db.session.delete(med)
+    db.session.commit()
+
+    return redirect('/rgz/medicines/')

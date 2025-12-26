@@ -75,8 +75,16 @@
                 <div><span>Количество:</span> {{ med.quantity if med.quantity > 0 else 'Отсутствует' }}</div>
 
                 {% if current_user.is_authenticated and current_user.login == 'admin' %}
-                    <div style="margin-top:10px;">
+                    <div style="margin-top:10px; display:flex; gap:15px;">
                         <a href="/rgz/edit_medicine/{{ med.id }}/">Редактировать</a>
+
+                        <form action="/rgz/delete_medicine/{{ med.id }}/" method="post"
+                            onsubmit="return confirm('Вы уверены, что хотите удалить препарат?');">
+                            <button type="submit"
+                                    style="background:none; border:none; color:#e74c3c; cursor:pointer; padding:0;">
+                                Удалить
+                            </button>
+                        </form>
                     </div>
                 {% endif %}
             </div>
