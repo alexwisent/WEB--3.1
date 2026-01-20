@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Сессия: Два максимальных числа</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block lab %}Сессия: Два максимальных числа{% endblock %}
+
+{% block main %}
     <h1>Введите 5 чисел</h1>
 
     {% if error %}
@@ -16,14 +14,11 @@
     {% endif %}
 
     <form method="POST">
-        <input type="text" name="num1" placeholder="Число 1"><br><br>
-        <input type="text" name="num2" placeholder="Число 2"><br><br>
-        <input type="text" name="num3" placeholder="Число 3"><br><br>
-        <input type="text" name="num4" placeholder="Число 4"><br><br>
+        <input type="text" name="num1" placeholder="Число 1"><br>
+        <input type="text" name="num2" placeholder="Число 2"><br>
+        <input type="text" name="num3" placeholder="Число 3"><br>
+        <input type="text" name="num4" placeholder="Число 4"><br>
         <input type="text" name="num5" placeholder="Число 5"><br><br>
         <button type="submit">Послать</button>
     </form>
-
-    <br><a href="/">Вернуться на главную</a>
-</body>
-</html>
+{% endblock %}
